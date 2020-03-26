@@ -1,5 +1,6 @@
 package com.application.app.model
 
+import net.minidev.json.annotate.JsonIgnore
 import javax.persistence.*
 
 @Entity
@@ -17,6 +18,7 @@ data class DataSet(
 
         var fileType : String? = null,
 
+        @JsonIgnore
         @ManyToOne(fetch = FetchType.LAZY, optional = false)
         @JoinColumn(name="userdata_id" , nullable = false)
         var userdata : UserData? = null,
@@ -33,19 +35,22 @@ data class DataSet(
 
         if (id != other.id) return false
         if (fileName != other.fileName) return false
+        if (description != other.description) return false
         if (fileType != other.fileType) return false
-        if (userdata != other.userdata) return false
-        if (data!!.contentEquals(other.data!!)) return false
+        if (data != null) {
+            if (other.data == null) return false
+            if (data!!.contentEquals(other.data!!)) return false
+        } else if (other.data != null) return false
 
         return true
     }
 
     override fun hashCode(): Int {
-        var result = id.hashCode()
+        var result = id?.hashCode() ?: 0
         result = 31 * result + fileName.hashCode()
-        result = 31 * result + fileType.hashCode()
-        result = 31 * result + userdata.hashCode()
-        result = 31 * result + data!!.contentHashCode()
+        result = 31 * result + description.hashCode()
+        result = 31 * result + (fileType?.hashCode() ?: 0)
+        result = 31 * result + (data?.contentHashCode() ?: 0)
         return result
     }
 }
