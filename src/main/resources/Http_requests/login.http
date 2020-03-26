@@ -1,0 +1,10 @@
+POST localhost:8080/auth/login
+Accept: application/json
+Content-Type: application/json
+
+{
+  "email" : "blendicav@gmail.com",
+  "password": "parola"
+}
+
+###

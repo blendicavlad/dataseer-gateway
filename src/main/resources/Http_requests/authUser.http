@@ -1,0 +1,12 @@
+POST localhost:8080/auth/signup
+Accept: application/json
+Content-Type: application/json
+
+{
+  "name" : "Andrei Andone",
+  "username" : "andreiandone",
+  "email" : "andrei@gmail.com",
+  "password" : "parola"
+}
+
+###
