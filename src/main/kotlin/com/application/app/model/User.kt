@@ -1,6 +1,6 @@
 package com.application.app.model
 
-import net.minidev.json.annotate.JsonIgnore
+import com.fasterxml.jackson.annotation.JsonIgnore
 import javax.persistence.*
 import javax.validation.constraints.Email
 import javax.validation.constraints.NotNull
@@ -24,13 +24,14 @@ data class User(
         @Column(nullable = false)
         val emailVerified: Boolean = false,
 
-        @OneToOne(mappedBy = "user", cascade = [CascadeType.ALL])
-        var userData: UserData? = null,
-
         @JsonIgnore
         val password: String? = null,
 
         @NotNull
         @Enumerated(EnumType.STRING) var provider: AuthProvider? = null,
         var providerId: String? = null
-)
+) {
+        @JsonIgnore
+        @OneToOne(mappedBy = "user", cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
+        var userData: UserData? = null
+}

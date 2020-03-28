@@ -1,5 +1,7 @@
 package com.application.app.model
 
+
+import net.minidev.json.annotate.JsonIgnore
 import javax.persistence.*
 
 @Entity
@@ -9,11 +11,12 @@ data class UserData (
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val userdata_id: Long? = null,
 
-    @OneToOne
+    @JsonIgnore
+    @OneToOne(fetch = FetchType.LAZY)
     @MapsId
-    val user : User? = null,
+    val user : User? = null
 
+) {
     @OneToMany(mappedBy = "userdata", fetch = FetchType.LAZY, cascade = [CascadeType.ALL])
     val datasets : MutableSet<DataSet> = mutableSetOf()
-
-)
+}

@@ -37,7 +37,7 @@ class AuthController {
     @Autowired lateinit var tokenProvider: TokenProvider
 
     @PostMapping("/login")
-    fun authenticateUser(@Valid @RequestBody loginRequest : LoginRequest) : ResponseEntity<*> {
+    fun authenticateUser(@Valid @RequestBody loginRequest : LoginRequest) : ResponseEntity<AuthResponse> {
 
         val authentication = authenticationManager.authenticate(
                 UsernamePasswordAuthenticationToken(
@@ -52,7 +52,7 @@ class AuthController {
 
     @PostMapping("/signup")
     @Throws(BadRequestException::class)
-    fun registerUser(@Valid @RequestBody signUpRequest: SignUpRequest) : ResponseEntity<*> {
+    fun registerUser(@Valid @RequestBody signUpRequest: SignUpRequest) : ResponseEntity<ApiResponse> {
 
         if(userRepository.existsByEmail(signUpRequest.email))
             throw BadRequestException("Email address already in use.")
