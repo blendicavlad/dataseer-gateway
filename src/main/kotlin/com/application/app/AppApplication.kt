@@ -2,6 +2,7 @@ package com.application.app
 
 import com.application.app.config.AppProperties
 import com.application.app.config.FileStorageProperties
+import com.application.app.config.GenericConfig
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.runApplication

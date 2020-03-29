@@ -1,6 +1,6 @@
 package com.application.app.model
 
-import net.minidev.json.annotate.JsonIgnore
+import com.fasterxml.jackson.annotation.JsonIgnore
 import javax.persistence.*
 
 @Entity
@@ -16,17 +16,15 @@ data class DataSet(
         @Column
         var description : String,
 
+        @Column(nullable = false)
         var fileType : String? = null,
 
         @JsonIgnore
-        @ManyToOne(fetch = FetchType.LAZY, optional = false)
-        @JoinColumn(name="userdata_id" , nullable = false)
-        var userdata : UserData? = null,
-
         @Lob
         var data: ByteArray? = null
 
-) {
+) : Auditable() {
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false

@@ -3,7 +3,6 @@ package com.application.app.controller
 import com.application.app.exception.BadRequestException
 import com.application.app.model.AuthProvider
 import com.application.app.model.User
-import com.application.app.model.UserData
 import com.application.app.payload.ApiResponse
 import com.application.app.payload.AuthResponse
 import com.application.app.payload.LoginRequest
@@ -63,12 +62,6 @@ class AuthController {
                 password = passwordEncoder.encode(signUpRequest.password),
                 provider = AuthProvider.local
         )
-
-        val userData = UserData(
-            user = user
-        )
-
-        user.userData = userData
 
         val result = userRepository.save(user)
 
