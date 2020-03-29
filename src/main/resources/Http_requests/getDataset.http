@@ -1,4 +1,4 @@
-GET localhost:8080/dataset/download_dataset_file/11
+GET localhost:8080/dataset/get_dataset/18
 Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNTg1NDE2MTUwLCJleHAiOjE1ODYyODAxNTB9.daF_tyhZVsMB85n_b1MW1eoXGyti-2LQZtCVZbQ1H7nAYmMpMYZjYbDYWxfL_koIqQxFKrkZr6-3vdcVGZ8b4w
 Accept: application/json
 Content-Type: application/json

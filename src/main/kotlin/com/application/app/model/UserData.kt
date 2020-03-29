@@ -2,6 +2,9 @@ package com.application.app.model
 
 
 import net.minidev.json.annotate.JsonIgnore
+import org.springframework.data.annotation.CreatedDate
+import org.springframework.data.annotation.LastModifiedDate
+import java.time.LocalDateTime
 import javax.persistence.*
 
 @Entity
@@ -14,7 +17,13 @@ data class UserData (
     @JsonIgnore
     @OneToOne(fetch = FetchType.LAZY)
     @MapsId
-    val user : User? = null
+    val user : User? = null,
+
+    @CreatedDate
+    val createdDate : LocalDateTime? = null,
+
+    @LastModifiedDate
+    var lastModifiedDate : LocalDateTime? = null
 
 ) {
     @OneToMany(mappedBy = "userdata", fetch = FetchType.LAZY, cascade = [CascadeType.ALL])

@@ -3,7 +3,7 @@ package com.application.app.payload
 import javax.validation.constraints.Email
 import javax.validation.constraints.NotBlank
 
-class SignUpRequest(
+data class SignUpRequest(
         @NotBlank
         var name : String,
         @NotBlank

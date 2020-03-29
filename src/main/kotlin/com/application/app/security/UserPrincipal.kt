@@ -68,10 +68,6 @@ class UserPrincipal(val id: Long?, val email: String, private val password: Stri
             return userPrincipal
         }
 
-        fun getCurrentUserPrincipal() : UserPrincipal {
-            val auth = SecurityContextHolder.getContext().authentication as AbstractAuthenticationToken
-            return auth.principal as UserPrincipal
-        }
     }
 
 }
