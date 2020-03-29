@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service
 import org.springframework.util.StringUtils
 import org.springframework.web.multipart.MultipartFile
 import java.io.IOException
+import java.util.*
 
 @Service
 class DataSetFileStorageService {
@@ -37,21 +38,17 @@ class DataSetFileStorageService {
             dataSet.data = file.bytes
             dataSet.fileType = file.contentType!!
 
-            val userData = securityContextProvider.getCurrentContextUser()!!.userData
-
-            dataSet.userdata = userData
-
             dataSetRepository.save(dataSet)
         } catch (ex: IOException) {
             logger.error(ex.toString())
             throw FileStorageException("Could not store file $fileName. Please try again!", ex)
         }
         finally {
-            logger.info("Saved dataset with id: $dataSet.id")
+            logger.info("Saved dataset with id: ${dataSet.id}")
         }
     }
 
-    fun getFile(fileId: Long): DataSet? {
-        return dataSetRepository.findByIdAndUserdata(fileId, securityContextProvider.getCurrentContextUser()!!.userData!!).get()
+    fun getFile(fileId: Long): Optional<DataSet> {
+        return dataSetRepository.findByIdAndCreatedBy(fileId, securityContextProvider.getCurrentContextUser()!!)
     }
 }

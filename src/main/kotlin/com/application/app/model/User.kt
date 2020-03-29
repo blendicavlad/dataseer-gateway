@@ -1,6 +1,7 @@
 package com.application.app.model
 
 import com.fasterxml.jackson.annotation.JsonIgnore
+import java.time.LocalDateTime
 import javax.persistence.*
 import javax.validation.constraints.Email
 import javax.validation.constraints.NotNull
@@ -27,11 +28,10 @@ data class User(
         @JsonIgnore
         val password: String? = null,
 
+        @Column(nullable = false, updatable = false)
+        val creationDate: LocalDateTime = LocalDateTime.now(),
+
         @NotNull
         @Enumerated(EnumType.STRING) var provider: AuthProvider? = null,
         var providerId: String? = null
-) {
-        @JsonIgnore
-        @OneToOne(mappedBy = "user", cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
-        var userData: UserData? = null
-}
+)

@@ -53,13 +53,13 @@ class DataSetController {
     @GetMapping("/download_dataset_file/{dataset_id}")
     fun downloadFile(@PathVariable dataset_id: Long): ResponseEntity<*> {
 
-        val dataSetFile: DataSet? = dataSetFileStorageService.getFile(dataset_id)
+        val dataSetFile: Optional<DataSet> = dataSetFileStorageService.getFile(dataset_id)
 
-        return if (dataSetFile != null) {
+        return if (dataSetFile.isPresent) {
             ResponseEntity.ok()
-                    .contentType(MediaType.parseMediaType(dataSetFile.fileType!!))
-                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + dataSetFile.fileName + "\"")
-                    .body(ByteArrayResource(dataSetFile.data!!))
+                    .contentType(MediaType.parseMediaType(dataSetFile.get().fileType!!))
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + dataSetFile.get().fileName + "\"")
+                    .body(ByteArrayResource(dataSetFile.get().data!!))
         } else {
             ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(ApiResponse(false,"No dataset with id: $dataset_id found"))
@@ -70,7 +70,7 @@ class DataSetController {
     fun getDataSet(@PathVariable dataset_id: Long) : ResponseEntity<*> {
 
         val dataSet : Optional<DataSet> = dataSetRepository
-                .findByIdAndUserdata(dataset_id, securityContextProvider.getCurrentContextUser()!!.userData!!)
+                .findByIdAndCreatedBy(dataset_id, securityContextProvider.getCurrentContextUser()!!)
 
         return if (dataSet.isPresent) ResponseEntity.ok().body(dataSet.get())
 
@@ -82,7 +82,7 @@ class DataSetController {
     fun getDataSets() : ResponseEntity<*> {
 
         val dataSets : List<DataSet> = dataSetRepository
-                .findAll(DataSetSpecifications.ofUserDetails(securityContextProvider.getCurrentContextUser()!!.userData))
+                .findAll(DataSetSpecifications.ofUser(securityContextProvider.getCurrentContextUser()!!))
 
         return ResponseEntity.ok().body(dataSets)
     }
