@@ -39,7 +39,7 @@ object Crypto {
         val iv = ByteArray(12)
         secureRandom.nextBytes(iv)
 
-        //Prepare your key/password
+        //Prepare the key
         val secretKey = generateSecretKey(key, iv)
         val cipher = Cipher.getInstance("AES/GCM/NoPadding")
         val parameterSpec = GCMParameterSpec(128, iv)
@@ -79,7 +79,7 @@ object Crypto {
         val iv = ByteArray(noonceSize)
         byteBuffer[iv]
 
-        //Prepare your key/password
+        //Prepare the key
         val secretKey = generateSecretKey(key, iv)
 
         //get the rest of encrypted data
@@ -88,10 +88,10 @@ object Crypto {
         val cipher = Cipher.getInstance("AES/GCM/NoPadding")
         val parameterSpec = GCMParameterSpec(128, iv)
 
-        //Encryption mode on!
+        //Decryption mode on
         cipher.init(Cipher.DECRYPT_MODE, secretKey, parameterSpec)
 
-        //Encrypt the data
+        //Decrypt the data
         return cipher.doFinal(cipherBytes)
     }
 
