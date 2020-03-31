@@ -14,14 +14,18 @@ class SecurityContextProvider {
     @Autowired
     private lateinit var userRepository: UserRepository
 
-    fun getCurrentUserPrincipal() : UserPrincipal? {
+    fun getCurrentUserPrincipal(): UserPrincipal? {
+
         val auth = SecurityContextHolder.getContext().authentication as AbstractAuthenticationToken
         return auth.principal as UserPrincipal
     }
 
     @Throws(Exception::class)
-    fun getCurrentContextUser() : User? {
+    fun getCurrentContextUser(): User? {
+
         val userPrincipal = getCurrentUserPrincipal()
-        return userRepository.findById(userPrincipal?.id!!).orElseThrow{Exception("Could not determine current user!")}
+        return userRepository.findById(userPrincipal?.id!!).orElseThrow {
+            Exception("SECURITY VIOLATION: Could not determine current user!")
+        }
     }
 }

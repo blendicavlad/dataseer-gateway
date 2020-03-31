@@ -18,6 +18,7 @@ class RestAuthenticationEntryPoint : AuthenticationEntryPoint {
 
     @Throws(IOException::class, ServletException::class)
     override fun commence(httpServletRequest: HttpServletRequest?, httpServletResponse: HttpServletResponse, e: AuthenticationException) {
+
         logger.error("Responding with unauthorized error. Message - {}", e.message)
         httpServletResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED, e.localizedMessage)
     }

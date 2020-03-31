@@ -3,10 +3,7 @@ package com.application.app.controller
 import com.application.app.model.DataSet
 import com.application.app.payload.ApiResponse
 import com.application.app.payload.UploadFileResponse
-import com.application.app.repository.DataSetRepository
-import com.application.app.repository.query_specifications.DataSetSpecifications
-import com.application.app.security.SecurityContextProvider
-import com.application.app.service.DataSetFileStorageService
+import com.application.app.service.SecureDataSetStorageService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.core.io.ByteArrayResource
 import org.springframework.http.HttpHeaders
@@ -24,19 +21,13 @@ import java.util.*
 class DataSetController {
 
     @Autowired
-    private lateinit var dataSetFileStorageService: DataSetFileStorageService
-
-    @Autowired
-    private lateinit var dataSetRepository : DataSetRepository
-
-    @Autowired
-    private lateinit var securityContextProvider: SecurityContextProvider
+    private lateinit var secureDataSetStorageService: SecureDataSetStorageService
 
     @PostMapping("/upload_dataset")
     fun uploadDataSet(@RequestParam("file") file: MultipartFile,
                       @RequestParam formData : MultiValueMap<String,String>): ResponseEntity<UploadFileResponse> {
 
-        val dataSet: DataSet = dataSetFileStorageService.storeDataSet(file, DataSet(
+        val dataSet: DataSet = secureDataSetStorageService.storeDataSet(file, DataSet(
                 fileName = formData["filename"]!![0],
                 description = formData["description"]!![0]
         ))
@@ -47,13 +38,13 @@ class DataSetController {
                 .toUriString()
 
         return ResponseEntity.ok()
-                .body(UploadFileResponse(dataSet.fileName, fileDownloadUri, file.contentType!!, file.size))
+                .body(UploadFileResponse(dataSet.fileName, fileDownloadUri, file.contentType!!, dataSet.data?.size!!.toLong()))
     }
 
     @GetMapping("/download_dataset_file/{dataset_id}")
     fun downloadFile(@PathVariable dataset_id: Long): ResponseEntity<*> {
 
-        val dataSetFile: Optional<DataSet> = dataSetFileStorageService.getFile(dataset_id)
+        val dataSetFile: Optional<DataSet> = secureDataSetStorageService.retrieveDataSet(dataset_id)
 
         return if (dataSetFile.isPresent) {
             ResponseEntity.ok()
@@ -69,8 +60,7 @@ class DataSetController {
     @GetMapping("/get_dataset/{dataset_id}")
     fun getDataSet(@PathVariable dataset_id: Long) : ResponseEntity<*> {
 
-        val dataSet : Optional<DataSet> = dataSetRepository
-                .findByIdAndCreatedBy(dataset_id, securityContextProvider.getCurrentContextUser()!!)
+        val dataSet : Optional<DataSet> = secureDataSetStorageService.retrieveDataSet(dataset_id)
 
         return if (dataSet.isPresent) ResponseEntity.ok().body(dataSet.get())
 
@@ -81,8 +71,7 @@ class DataSetController {
     @GetMapping("/get_datasets")
     fun getDataSets() : ResponseEntity<*> {
 
-        val dataSets : List<DataSet> = dataSetRepository
-                .findAll(DataSetSpecifications.ofUser(securityContextProvider.getCurrentContextUser()!!))
+        val dataSets : List<DataSet> = secureDataSetStorageService.retrieveDataSets()
 
         return ResponseEntity.ok().body(dataSets)
     }
