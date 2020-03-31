@@ -11,6 +11,7 @@ class AuditorAwareImpl : AuditorAware<User> {
     private lateinit var securityContextProvider: SecurityContextProvider
 
     override fun getCurrentAuditor(): Optional<User> {
+
         securityContextProvider = BeanProvider.getBean(SecurityContextProvider::class.java)
         return Optional.of(securityContextProvider.getCurrentContextUser()!!)
     }
