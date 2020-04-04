@@ -3,7 +3,11 @@ package com.application.app.exception
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.ResponseStatus
 
-
+/**
+ * Resource can not be found on server [RuntimeException]
+ * @author Blendica Vlad
+ * @date 02.03.2020
+ */
 @ResponseStatus(HttpStatus.NOT_FOUND)
 class ResourceNotFoundException(private val resourceName: String?, private val fieldName: String?, private val fieldValue: Any?) :
         RuntimeException(String.format("%s not found with %s : '%s'", resourceName, fieldName, fieldValue))

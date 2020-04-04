@@ -3,6 +3,11 @@ package com.application.app.config
 import org.springframework.web.servlet.config.annotation.CorsRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
 
+/**
+ * Configures CORS mappings
+ * @author Blendica Vlad
+ * @date 02.03.2020
+ */
 open class WebMvcConfig : WebMvcConfigurer {
 
     private val MAX_AGE_SECS : Long = 3600

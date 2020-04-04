@@ -8,6 +8,11 @@ import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.oauth2.core.user.OAuth2User
 
+/**
+ * Defines the User Princial of [User] to be stored in the Spring context by session
+ * @author Blendica Vlad
+ * @date 02.03.2020
+ */
 class UserPrincipal(val id: Long?, val email: String, private val password: String, private val authorities: Collection<GrantedAuthority>) : OAuth2User, UserDetails {
     private var attributes: Map<String, Any>? = null
 
@@ -52,6 +57,11 @@ class UserPrincipal(val id: Long?, val email: String, private val password: Stri
     }
 
     companion object {
+        /**
+         * Creates a standard principal with standard user authority
+         * @param user [User]
+         * @return [UserPrincipal]
+         */
         fun create(user: User): UserPrincipal {
             val authorities: List<GrantedAuthority> = listOf(SimpleGrantedAuthority("ROLE_USER"))
             return UserPrincipal(
@@ -62,6 +72,13 @@ class UserPrincipal(val id: Long?, val email: String, private val password: Stri
             )
         }
 
+        /**
+         * Creates principal with specific athributes recieved by OAuth context
+         * An OAuth 2.0 user is composed of one or more attributes, for example, first name, middle name, last name, email, phone number, address, etc.
+         * Each user attribute has a "name" and "value"
+         * @param user [User]
+         * @return [UserPrincipal]
+         */
         fun create(user: User, attributes: Map<String, Any>?): UserPrincipal {
             val userPrincipal = create(user)
             userPrincipal.setAttributes(attributes)

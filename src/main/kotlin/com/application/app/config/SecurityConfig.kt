@@ -21,6 +21,11 @@ import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 
+/**
+ * Security configurations
+ * @author Blendica Vlad
+ * @date 01.03.2020
+ */
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(
@@ -44,6 +49,11 @@ class SecurityConfig : WebSecurityConfigurerAdapter() {
 
     @Bean fun cookieAuthorizationRequestRepository() : HttpCookieOAuth2AuthorizationRequestRepository = HttpCookieOAuth2AuthorizationRequestRepository()
 
+    /**
+     * @param auth
+     * Injects custom user details service and password encoder
+     * into the authentication manager
+     */
     override fun configure(auth: AuthenticationManagerBuilder?) {
         auth
             ?.userDetailsService(customUserDetailsService)
@@ -53,11 +63,19 @@ class SecurityConfig : WebSecurityConfigurerAdapter() {
 
     @Bean fun passwordEncoder() : BCryptPasswordEncoder = BCryptPasswordEncoder()
 
+    /**
+     * @return AuthenticationManager
+     * Registers the authentication manager into the bean context
+     */
     @Bean(BeanIds.AUTHENTICATION_MANAGER)
     override fun authenticationManagerBean(): AuthenticationManager {
         return super.authenticationManagerBean()
     }
 
+    /**
+     * @param http
+     * Configures general security rules (CORS/Session Management/Authorised endpoints etc.)
+     */
     override fun configure(http: HttpSecurity) {
         http
             .cors()

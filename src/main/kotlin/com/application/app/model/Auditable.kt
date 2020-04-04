@@ -8,6 +8,11 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener
 import java.util.*
 import javax.persistence.*
 
+/**
+ * Parent entity class to enable auditing in inheriting members
+ * @author Blendica Vlad
+ * @date 16.03.2020
+ */
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener::class)
 abstract class Auditable {

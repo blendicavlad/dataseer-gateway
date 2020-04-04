@@ -13,6 +13,13 @@ import javax.crypto.spec.PBEKeySpec
 import javax.crypto.spec.SecretKeySpec
 
 
+/**
+ * Static object that will be used to encrypt/decrypt [com.application.app.model.DataSet] files
+ * Maybe to be used for other stuff in the future?
+ * Adapted from https://stackoverflow.com/a/30591380/9759267
+ * @author Blendica Vlad
+ * @date 24.03.2020
+ */
 object Crypto {
 
     private const val SEED_PREFIX = "jYtlhSJFmUQjMormx0G"

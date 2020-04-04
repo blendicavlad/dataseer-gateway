@@ -3,6 +3,12 @@ package com.application.app.model
 import com.fasterxml.jackson.annotation.JsonIgnore
 import javax.persistence.*
 
+/**
+ * A DataSet consists of a file (for momment just CSV format) that will be consumed
+ * by the time series analysis external service
+ * @author Blendica Vlad
+ * @date 14.03.2020
+ */
 @Entity
 @Table(name = "datasets")
 data class DataSet(

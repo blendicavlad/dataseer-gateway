@@ -3,6 +3,11 @@ package com.application.app.config
 import org.springframework.boot.context.properties.ConfigurationProperties
 import kotlin.properties.Delegates
 
+/**
+ * Links the properties defined in the application configuration with the Spring Context
+ * @author Blendica Vlad
+ * @date 01.03.2020
+ */
 @ConfigurationProperties(prefix = "app")
 open class AppProperties {
 

@@ -10,12 +10,23 @@ import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
 
+/**
+ * Http auth exception handling interceptor
+ * @author Blendica Vlad
+ * @date 03.03.2020
+ */
 class RestAuthenticationEntryPoint : AuthenticationEntryPoint {
 
     companion object {
         val logger: Logger = LoggerFactory.getLogger(RestAuthenticationEntryPoint::class.java)
     }
 
+    /**
+     * Create unauthorized response in case of bad credentials
+     * @param httpServletRequest [HttpServletRequest]
+     * @param httpServletResponse [HttpServletRequest]
+     * @param e [AuthenticationException]
+     */
     @Throws(IOException::class, ServletException::class)
     override fun commence(httpServletRequest: HttpServletRequest?, httpServletResponse: HttpServletResponse, e: AuthenticationException) {
 

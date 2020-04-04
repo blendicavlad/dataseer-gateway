@@ -16,22 +16,23 @@ import java.nio.file.Path
 import java.nio.file.Paths
 import java.nio.file.StandardCopyOption
 
-
+/**
+ * Store/Loads files from local storage
+ * Initially made for testing purposes, now useless, maybe for use in the future?
+ * @author Blendica Vlad
+ * @date 14.03.2020
+ */
 @Service
 class LocalFileStorageService @Autowired constructor(fileStorageProperties: FileStorageProperties) {
     private val fileStorageLocation: Path = Paths.get(fileStorageProperties.uploadDir).toAbsolutePath().normalize()
 
 
     fun storeFile(file: MultipartFile): String {
-        // Normalize file name
         val fileName = StringUtils.cleanPath(file.originalFilename!!)
         return try {
-            // Check if the file's name contains invalid characters
             if (fileName.contains("..")) {
                 throw FileStorageException("Sorry! Filename contains invalid path sequence $fileName")
             }
-
-            // Copy file to the target location (Replacing existing file with the same name)
             val targetLocation = fileStorageLocation.resolve(fileName)
             Files.copy(file.inputStream, targetLocation, StandardCopyOption.REPLACE_EXISTING)
             fileName
