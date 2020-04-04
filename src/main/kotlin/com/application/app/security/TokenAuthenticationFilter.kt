@@ -14,7 +14,11 @@ import javax.servlet.ServletException
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
-
+/**
+ * Http request filter, validates that every [HttpServletRequest] is authenticated
+ * @author Blendica Vlad
+ * @date 03.03.2020
+ */
 class TokenAuthenticationFilter : OncePerRequestFilter() {
 
     @Autowired private lateinit var tokenProvider: TokenProvider
@@ -25,6 +29,12 @@ class TokenAuthenticationFilter : OncePerRequestFilter() {
         val logger: Logger = LoggerFactory.getLogger(TokenAuthenticationFilter::class.java)
     }
 
+    /**
+     * Token validation filter for every [HttpServletRequest]
+     * @param request [HttpServletRequest]
+     * @param response [HttpServletResponse]
+     * @param filterChain [FilterChain]
+     */
     @Throws(ServletException::class, IOException::class)
     override fun doFilterInternal(request: HttpServletRequest, response: HttpServletResponse, filterChain: FilterChain) {
         try {
@@ -42,6 +52,11 @@ class TokenAuthenticationFilter : OncePerRequestFilter() {
         filterChain.doFilter(request, response)
     }
 
+    /**
+     * Gets JWT Token from [HttpServletResponse], must start with "Bearer "
+     * @param request [HttpServletRequest]
+     * @return [String]
+     */
     private fun getJwtFromRequest(request: HttpServletRequest): String? {
 
         val bearerToken = request.getHeader("Authorization")

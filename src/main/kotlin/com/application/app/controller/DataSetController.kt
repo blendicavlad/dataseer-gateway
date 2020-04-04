@@ -16,6 +16,11 @@ import org.springframework.web.multipart.MultipartFile
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder
 import java.util.*
 
+/**
+ * [DataSet] REST Controller
+ * @author Blendica Vlad
+ * @date 14.03.2020
+ */
 @RestController
 @RequestMapping("/dataset")
 class DataSetController {
@@ -23,6 +28,12 @@ class DataSetController {
     @Autowired
     private lateinit var secureDataSetStorageService: SecureDataSetStorageService
 
+    /**
+     * Stores the DataSet into DB
+     * @param file [MultipartFile] (A CSV file to be persisted)
+     * @param formData [MultiValueMap]
+     * @return uploadResponse [UploadFileResponse]
+     */
     @PostMapping("/upload_dataset")
     fun uploadDataSet(@RequestParam("file") file: MultipartFile,
                       @RequestParam formData : MultiValueMap<String,String>): ResponseEntity<UploadFileResponse> {
@@ -41,6 +52,11 @@ class DataSetController {
                 .body(UploadFileResponse(dataSet.fileName, fileDownloadUri, file.contentType!!, dataSet.data?.size!!.toLong()))
     }
 
+    /**
+     * Downloads the file of a [DataSet] by ID
+     * @param dataset_id [Long]
+     * @return [ByteArray] of the file or [ApiResponse] not found
+     */
     @GetMapping("/download_dataset_file/{dataset_id}")
     fun downloadFile(@PathVariable dataset_id: Long): ResponseEntity<*> {
 
@@ -57,6 +73,10 @@ class DataSetController {
         }
     }
 
+    /**
+     * Returns a [DataSet] by ID, does not return the file
+     * @return JSON of [DataSet] or [ApiResponse] not found
+     */
     @GetMapping("/get_dataset/{dataset_id}")
     fun getDataSet(@PathVariable dataset_id: Long) : ResponseEntity<*> {
 
@@ -68,6 +88,10 @@ class DataSetController {
                 .body(ApiResponse(false,"No dataset with id: $dataset_id found"))
     }
 
+    /**
+     * Returns all DataSets of the logged-in user
+     * @return [List<[DataSet]>]
+     */
     @GetMapping("/get_datasets")
     fun getDataSets() : ResponseEntity<*> {
 

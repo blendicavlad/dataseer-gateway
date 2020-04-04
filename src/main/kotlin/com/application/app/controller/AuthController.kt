@@ -23,6 +23,11 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder
 import java.net.URI
 import javax.validation.Valid
 
+/**
+ * Authentication REST Controller
+ * @author Blendica Vlad
+ * @date 02.03.2020
+ */
 @RestController
 @RequestMapping("/auth")
 class AuthController {
@@ -35,6 +40,11 @@ class AuthController {
 
     @Autowired lateinit var tokenProvider: TokenProvider
 
+    /**
+     * Authenticate the requesting user
+     * @param loginRequest [LoginRequest]
+     * @return authResponse [AuthResponse]
+     */
     @PostMapping("/login")
     fun authenticateUser(@Valid @RequestBody loginRequest : LoginRequest) : ResponseEntity<AuthResponse> {
 
@@ -49,6 +59,11 @@ class AuthController {
         return ResponseEntity.ok(AuthResponse(token))
     }
 
+    /**
+     * Register the requesting user
+     * @param signUpRequest [SignUpRequest]
+     * @return api response [ApiResponse]
+     */
     @PostMapping("/signup")
     @Throws(BadRequestException::class)
     fun registerUser(@Valid @RequestBody signUpRequest: SignUpRequest) : ResponseEntity<ApiResponse> {

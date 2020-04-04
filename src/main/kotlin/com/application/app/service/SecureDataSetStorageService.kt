@@ -12,11 +12,17 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import org.springframework.util.StringUtils
 import org.springframework.web.multipart.MultipartFile
 import java.io.IOException
 import java.util.*
 
+/**
+ * Secure DB persistence service for [DataSet] handling
+ * @author Blendica Vlad
+ * @date 14.03.2020
+ */
 @Service
 class SecureDataSetStorageService {
 
@@ -30,6 +36,13 @@ class SecureDataSetStorageService {
     @Autowired
     private lateinit var securityContextProvider: SecurityContextProvider
 
+    /**
+     * Store a [DataSet] with its corresponding [MultipartFile] into DB
+     * @param file [MultipartFile]
+     * @param dataSet [DataSet]
+     * @return persisted dataset [DataSet]
+     */
+    @Transactional
     @Throws(Exception::class)
     fun storeDataSet(file: MultipartFile, dataSet: DataSet): DataSet {
         // Normalize file name
@@ -39,6 +52,7 @@ class SecureDataSetStorageService {
             if (fileName.contains("..")) {
                 throw FileStorageException("Sorry! Filename contains invalid path sequence $fileName")
             }
+            //encrypt and compress the file
             dataSet.data = transformDataToDB(file.bytes)
             dataSet.fileType = file.contentType!!
 
@@ -51,35 +65,53 @@ class SecureDataSetStorageService {
         }
     }
 
+    /**
+     * Retrieve a [DataSet] from DB, or empty [Optional] if not found
+     * @param fileId [Long]
+     * @return Optional<[DataSet]>
+     */
     fun retrieveDataSet(fileId: Long): Optional<DataSet> {
 
         return dataSetRepository.findByIdAndCreatedBy(fileId, securityContextProvider.getCurrentContextUser()!!)
                 .also {
                     if (it.isPresent) {
-                        it.get().data = transformDataFromDB(it.get().data!!)
+                        it.get().data = transformDataFromDB(it.get().data!!) //decompress and decrypt the data
                     }
                 }
     }
 
+    /**
+     * Retrieve a list of [DataSet] objects from DB,
+     * @return List<[DataSet]>
+     */
     fun retrieveDataSets(): List<DataSet> {
 
         return dataSetRepository.findAll(DataSetSpecifications.ofUser(securityContextProvider.getCurrentContextUser()!!))
                 .also { it ->
                     it.forEach {
-                        it.data = transformDataFromDB(it.data!!)
+                        it.data = transformDataFromDB(it.data!!) //decompress and decrypt the data for each file
                     }
                 }
     }
 
+    /**
+     * Compress and encrypt data
+     * First compress and then encrypt because of high entropy of encryption
+     * @param data [ByteArray]
+     * @return compressed and encrypted data [ByteArray]
+     */
     private fun transformDataToDB(data: ByteArray): ByteArray {
 
-        //First compress and then encrypt because of high entropy of encryption
         return Crypto.encryptData(securityContextProvider.getCurrentContextUser()!!.password!!, compressFile(data))!!
     }
 
+    /**
+     * Decrypt and decompress data
+     * @param data [ByteArray]
+     * @return decrypted and decompressed data [ByteArray]
+     */
     private fun transformDataFromDB(data: ByteArray): ByteArray {
 
-        //Then we first decrypt and then decmpress
         return decompressFile(Crypto.decryptData(securityContextProvider.getCurrentContextUser()!!.password!!, data)!!)
     }
 }

@@ -15,7 +15,11 @@ import javax.servlet.ServletException
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
-
+/**
+ * OAuth authentication succes handling business logic
+ * @author Blendica Vlad
+ * @date 06.03.2020
+ */
 @Component
 class OAuth2AuthenticationSuccessHandler(
         private val tokenProvider: TokenProvider,
@@ -23,6 +27,12 @@ class OAuth2AuthenticationSuccessHandler(
         private val httpCookieOAuth2AuthorizationRequestRepository: HttpCookieOAuth2AuthorizationRequestRepository) : SimpleUrlAuthenticationSuccessHandler() {
 
 
+    /**
+     * Succes auth event listener
+     * @param request [HttpServletRequest]
+     * @param response [HttpServletResponse
+     * @param authentication [Authentication]
+     */
     @Throws(IOException::class, ServletException::class)
     override fun onAuthenticationSuccess(request: HttpServletRequest, response: HttpServletResponse, authentication: Authentication) {
         val targetUrl = determineTargetUrl(request, response, authentication)
@@ -34,6 +44,14 @@ class OAuth2AuthenticationSuccessHandler(
         redirectStrategy.sendRedirect(request, response, targetUrl)
     }
 
+
+    /**
+     * Validades redirect url and create JWT token
+     * @param request [HttpServletRequest]
+     * @param response [HttpServletResponse]
+     * @param authentication [Authentication]
+     * @return token [String]
+     */
     override fun determineTargetUrl(request: HttpServletRequest, response: HttpServletResponse, authentication: Authentication): String? {
 
         val redirectUri : String? = getCookie(request, REDIRECT_URI_PARAM_COOKIE_NAME).let{ it?.value }
@@ -50,11 +68,21 @@ class OAuth2AuthenticationSuccessHandler(
                 .build().toUriString()
     }
 
+    /**
+     * As the method name says
+     * @param request [HttpServletRequest]
+     * @param response [HttpServletResponse]
+     */
     protected fun clearAuthenticationAttributes(request: HttpServletRequest, response: HttpServletResponse) {
         super.clearAuthenticationAttributes(request)
         httpCookieOAuth2AuthorizationRequestRepository.removeAuthorizationRequestCookies(request, response)
     }
 
+    /**
+     * Verifies if the redirect uri matches one of the uri-s defined in app properties
+     * @param uri [String]
+     * @return [Boolean]
+     */
     private fun isAuthorizedRedirectUri(uri : String) : Boolean {
         val clientRedirectUri : URI = URI.create(uri)
 

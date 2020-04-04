@@ -7,6 +7,11 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.data.domain.AuditorAware
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing
 
+/**
+ * Enables JPA Auditing for JPA Entities
+ * @author Blendica Vlad
+ * @date 01.03.2020
+ */
 @Configuration
 @EnableJpaAuditing(auditorAwareRef = "auditorProvider")
 class GenericConfig {

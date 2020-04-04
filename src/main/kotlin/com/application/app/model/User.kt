@@ -6,6 +6,11 @@ import javax.persistence.*
 import javax.validation.constraints.Email
 import javax.validation.constraints.NotNull
 
+/**
+ * User Model
+ * @author Blendica Vlad
+ * @date 01.03.2020
+ */
 @Entity
 @Table(name = "users", uniqueConstraints = [UniqueConstraint(columnNames = arrayOf("email"))])
 data class User(
