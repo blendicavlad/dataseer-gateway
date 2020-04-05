@@ -9,7 +9,7 @@ import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.oauth2.core.user.OAuth2User
 
 /**
- * Defines the User Princial of [User] to be stored in the Spring context by session
+ * Defines the User Principal of [User] to be stored in the Spring context by session
  * @author Blendica Vlad
  * @date 02.03.2020
  */

@@ -26,9 +26,9 @@ object Crypto {
 
     /**
      * This method will encrypt the given data
-     * @param key : the password that will be used to encrypt the data
+     * @param key : the secret key that will be used to decrypt the data
      * @param data : the data that will be encrypted
-     * @return Encrypted data in a byte array
+     * @return Encrypted data as a byte array
      */
     @Throws(NoSuchPaddingException::class,
             NoSuchAlgorithmException::class,
@@ -42,7 +42,7 @@ object Crypto {
         //Prepare the nonce
         val secureRandom = SecureRandom()
 
-        //Noonce should be 12 bytes
+        //Nonce should be 12 bytes
         val iv = ByteArray(12)
         secureRandom.nextBytes(iv)
 
@@ -65,7 +65,12 @@ object Crypto {
         return byteBuffer.array()
     }
 
-
+    /**
+     * This method will decrypt the given data
+     * @param key [String] : the secret key that will be used to decrypt the data
+     * @param encryptedData [String] : the data that will be encrypted
+     * @return Decrypted data as a byte array
+     */
     @Throws(NoSuchPaddingException::class,
             NoSuchAlgorithmException::class,
             InvalidAlgorithmParameterException::class,

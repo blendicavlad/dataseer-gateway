@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
 /**
- * Userd to persist OAuth2 authorisation reuqsts to be cached, resolved, filtered etc.
+ * Used to persist OAuth2 authorisation requests to be cached, resolved, filtered etc.
  * @author Blendica Vlad
  * @date 06.03.2020
  */
@@ -25,7 +25,7 @@ class HttpCookieOAuth2AuthorizationRequestRepository : AuthorizationRequestRepos
     /**
      * Deserialize Oauth cookie from request into [OAuth2AuthorizationRequest], maybe prone to security vulnerabilities but fuck it
      * @param request [HttpServletRequest]
-     * @return OAuth auth requeest object [OAuth2AuthorizationRequest]
+     * @return OAuth auth request object [OAuth2AuthorizationRequest]
      */
     override fun loadAuthorizationRequest(request: HttpServletRequest?): OAuth2AuthorizationRequest? {
         return request?.let {
