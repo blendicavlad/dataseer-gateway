@@ -73,29 +73,29 @@ class SecureDataSetStorageService {
     fun retrieveDataSet(fileId: Long): Optional<DataSet> {
 
         return dataSetRepository.findByIdAndCreatedBy(fileId, securityContextProvider.getCurrentContextUser()!!)
-                .also {
-                    if (it.isPresent) {
-                        it.get().data = transformDataFromDB(it.get().data!!) //decompress and decrypt the data
+                .also { dataSet ->
+                    if (dataSet.isPresent) {
+                        dataSet.get().data = transformDataFromDB(dataSet.get().data!!) //decompress and decrypt the data
                     }
                 }
     }
 
     /**
-     * Retrieve a list of [DataSet] objects from DB,
+     * Retrieve a list of [DataSet] objects from DB
      * @return List<[DataSet]>
      */
     fun retrieveDataSets(): List<DataSet> {
 
         return dataSetRepository.findAll(DataSetSpecifications.ofUser(securityContextProvider.getCurrentContextUser()!!))
-                .also { it ->
-                    it.forEach {
-                        it.data = transformDataFromDB(it.data!!) //decompress and decrypt the data for each file
+                .also { dataSetList ->
+                    dataSetList.forEach { dataSet ->
+                        dataSet.data = transformDataFromDB(dataSet.data!!) //decompress and decrypt the data for each file
                     }
                 }
     }
 
     /**
-     * Compress and encrypt data
+     * Compress and encrypt data (uses user password as secret key for the encryption/decryption process)
      * First compress and then encrypt because of high entropy of encryption
      * @param data [ByteArray]
      * @return compressed and encrypted data [ByteArray]
