@@ -10,7 +10,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler
 import org.springframework.web.client.RestTemplate
 
 /**
- * Overrides the default RestTemplate in Spring application context
+ * Overrides the default RestTemplate in Spring application context 
  * @author Blendica Vlad
  * @date 04.05.2020
  */
