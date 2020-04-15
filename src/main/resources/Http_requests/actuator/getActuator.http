@@ -1,0 +1,5 @@
+GET localhost:8080/actuator
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNTg1NjkyMjY3LCJleHAiOjE1ODY1NTYyNjd9.Z9CKFlAhZRUoscM3yBBy9__JHLYcUGC-TzSNrM58ttRowL3Phv90ZxwrWW1MI2i3BmUe2oYM8TD5T3BZbTaQ1w
+Accept: application/json
+
+###

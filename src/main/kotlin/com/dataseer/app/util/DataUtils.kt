@@ -1,10 +1,7 @@
 package com.dataseer.app.util
-
-import com.dataseer.app.security.Crypto
 import java.io.BufferedReader
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
-import java.io.InputStreamReader
 import java.util.zip.GZIPInputStream
 import java.util.zip.GZIPOutputStream
 
@@ -29,7 +26,6 @@ fun compressFile(file : ByteArray) : ByteArray {
     gzip.write(file)
     gzip.close()
     byteArrayOutputStream.close()
-    //println("Compression lenght = ${byteArrayOutputStream.toByteArray().size}")
     return byteArrayOutputStream.toByteArray()
 }
 
@@ -43,16 +39,9 @@ fun compressFile(file : ByteArray) : ByteArray {
 fun decompressFile(file : ByteArray): ByteArray {
     if (file.isEmpty()) return file
     val gis = GZIPInputStream(ByteArrayInputStream(file))
-    val bf = BufferedReader(InputStreamReader(gis, "UTF-8"))
-    var outStr = ""
-    var line: String
-    while (bf.readLine().also { line = it ?: "" } != null) {
-        outStr += line
-    }
+    val content = gis.bufferedReader().use(BufferedReader::readText)
     gis.close()
-    bf.close()
-    //println("Decompression lenght = ${outStr.toByteArray().size}")
-    return outStr.toByteArray()
+    return content.toByteArray()
 }
 
 fun main() {
@@ -67,8 +56,8 @@ fun main() {
             "sdfghjkzzzzzzxxxxxcccc"
 
     val data = compressFile(toBeCompressed.toByteArray())
-    val encriptedData = Crypto.encryptData(key,data)
-    val decriptedData = Crypto.decryptData(key,encriptedData)
-    val result = decompressFile(decriptedData!!)
+//    val encriptedData = Crypto.encryptData(key,data)
+//    val decriptedData = Crypto.decryptData(key,encriptedData)
+    val result = decompressFile(data)
     if (toBeCompressed.toByteArray().contentEquals(result)) println("Merge")
 }
