@@ -14,6 +14,8 @@ import javax.persistence.criteria.Root
  */
 object DataSetSpecifications {
 
+    val allowedFileTypes = listOf("text/csv")
+
     /**
      * Secure the [DataSet] queries by adding [User] constraint
      * @param userData [User]

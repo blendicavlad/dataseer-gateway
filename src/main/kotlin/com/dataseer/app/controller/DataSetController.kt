@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.util.MultiValueMap
+import org.springframework.util.StringUtils
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder
@@ -39,8 +40,8 @@ class DataSetController {
                       @RequestParam formData : MultiValueMap<String,String>): ResponseEntity<UploadFileResponse> {
 
         val dataSet: DataSet = secureDataSetStorageService.storeDataSet(file, DataSet(
-                fileName = formData["filename"]!![0],
-                description = formData["description"]!![0]
+                fileName = StringUtils.cleanPath(file.originalFilename!!),
+                description = formData["description"]?.get(0)
         ))
 
         val fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()

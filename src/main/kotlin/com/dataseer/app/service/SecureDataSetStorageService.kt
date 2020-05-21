@@ -2,6 +2,7 @@ package com.dataseer.app.service
 
 import com.dataseer.app.exception.FileStorageException
 import com.dataseer.app.model.DataSet
+import com.dataseer.app.model.MimeTypes
 import com.dataseer.app.repository.DataSetRepository
 import com.dataseer.app.repository.query_specifications.DataSetSpecifications
 import com.dataseer.app.security.Crypto
@@ -46,6 +47,12 @@ class SecureDataSetStorageService {
     @Throws(Exception::class)
     fun storeDataSet(file: MultipartFile, dataSet: DataSet): DataSet {
         // Normalize file name
+        if (file.isEmpty) {
+            throw Exception("The dataset has no file")
+        }
+        if (!validateFileType(file)) {
+            throw Exception("Only csv files are allowed")
+        }
         val fileName = StringUtils.cleanPath(file.originalFilename!!)
         return try {
             // Check if the file's name contains invalid characters
@@ -62,6 +69,13 @@ class SecureDataSetStorageService {
             throw FileStorageException("Could not store file $fileName. Please try again!", ex)
         } finally {
             logger.info("Saved dataset with id: ${dataSet.id}")
+        }
+    }
+
+    fun validateFileType(file : MultipartFile) : Boolean {
+        return when(file.contentType) {
+            MimeTypes.MIME_TEXT_CSV -> true
+            else -> false
         }
     }
 

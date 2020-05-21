@@ -29,7 +29,7 @@ class DSHttpClientTest {
 
     @Test
     fun postResponse() {
-        val uri = "http://localhost:8000/api/core"
+        val uri = "http://localhost:8000/api/core/describe"
         val loginRequest : LoginRequest = LoginRequest("andrei@gmail.com", "parola")
         authController.authenticateUser(loginRequest)
         val headers = HttpHeaders()
