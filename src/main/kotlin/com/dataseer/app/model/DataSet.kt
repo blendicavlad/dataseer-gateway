@@ -20,7 +20,7 @@ data class DataSet(
         var fileName : String,
 
         @Column
-        var description : String,
+        var description : String? = null,
 
         @Column(nullable = false)
         var fileType : String? = null,
