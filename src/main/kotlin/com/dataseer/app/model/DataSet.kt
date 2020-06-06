@@ -16,10 +16,13 @@ data class DataSet(
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         val id : Long? = null,
 
-        @Column(nullable = false)
+        @Column(nullable = false, length = 60)
+        var name : String,
+
+        @Column(nullable = false, length = 60)
         var fileName : String,
 
-        @Column
+        @Column(length = 255)
         var description : String? = null,
 
         @Column(nullable = false)
@@ -27,34 +30,39 @@ data class DataSet(
 
         @JsonIgnore
         @Lob
-        var data: ByteArray? = null
+        var data: ByteArray? = null,
+
+        @OneToMany(mappedBy = "dataset", cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
+        val headers : MutableSet<DataHeader> = mutableSetOf()
 
 ) : Auditable() {
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
-        if (javaClass != other?.javaClass) return false
-
-        other as DataSet
+        if (other !is DataSet) return false
 
         if (id != other.id) return false
+        if (name != other.name) return false
         if (fileName != other.fileName) return false
         if (description != other.description) return false
         if (fileType != other.fileType) return false
         if (data != null) {
             if (other.data == null) return false
-            if (data!!.contentEquals(other.data!!)) return false
+            if (!data!!.contentEquals(other.data!!)) return false
         } else if (other.data != null) return false
+        if (headers != other.headers) return false
 
         return true
     }
 
     override fun hashCode(): Int {
         var result = id?.hashCode() ?: 0
+        result = 31 * result + name.hashCode()
         result = 31 * result + fileName.hashCode()
-        result = 31 * result + description.hashCode()
+        result = 31 * result + (description?.hashCode() ?: 0)
         result = 31 * result + (fileType?.hashCode() ?: 0)
         result = 31 * result + (data?.contentHashCode() ?: 0)
+        result = 31 * result + headers.hashCode()
         return result
     }
 }

@@ -23,7 +23,7 @@ class SecurityContextProvider {
      * Gets current logged in [UserPrincipal]
      * @return logged in user [UserPrincipal]
      */
-    fun getCurrentUserPrincipal(): UserPrincipal? {
+    fun getCurrentUserPrincipal(): UserPrincipal {
 
         val auth = SecurityContextHolder.getContext().authentication as AbstractAuthenticationToken
         return auth.principal as UserPrincipal
@@ -34,10 +34,10 @@ class SecurityContextProvider {
      * @return logged in user [User]
      */
     @Throws(Exception::class)
-    fun getCurrentContextUser(): User? {
+    fun getCurrentContextUser(): User {
 
         val userPrincipal = getCurrentUserPrincipal()
-        return userRepository.findById(userPrincipal?.id!!).orElseThrow {
+        return userRepository.findById(userPrincipal.id).orElseThrow {
             Exception("SECURITY VIOLATION: Could not determine current user!")
         }
     }

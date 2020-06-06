@@ -18,15 +18,14 @@ object DataSetSpecifications {
 
     /**
      * Secure the [DataSet] queries by adding [User] constraint
-     * @param userData [User]
+     * @param user [User]
      * @return [Specification]
      */
-    fun ofUser(userData: User?): Specification<DataSet?> {
-        return Specification {
-            root: Root<DataSet?>,
-            _: CriteriaQuery<*>?, //No hard-coded criteria query needed, just map the createdBy property and let Spring to its magic
-            criteriaBuilder: CriteriaBuilder
-                -> criteriaBuilder.equal(root.get<Any>("createdBy"), userData)
+    fun ofUser(user: User): Specification<DataSet> {
+        return Specification{ root: Root<DataSet>,
+                               _: CriteriaQuery<*>,
+                               criteriaBuilder: CriteriaBuilder
+            -> criteriaBuilder.equal(root.get<Any>("createdBy"), user)
         }
     }
 }

@@ -7,7 +7,7 @@ spring:
   jpa:
     show-sql: true
     hibernate:
-      ddl-auto: none
+      ddl-auto: update
       naming-strategy: org.hibernate.cfg.ImprovedNamingStrategy
     properties:
       hibernate:
@@ -46,7 +46,7 @@ spring:
   servlet:
     multipart:
       enabled: true
-      file-size-threshold: 2KB
+      file-size-threshold: 10MB
       max-file-size: 300MB
       max-request-size: 300MB
 
@@ -55,10 +55,7 @@ app:
     tokenSecret: 926D96C90030DD58429D2751AC1BDBBC
     tokenExpirationMsec: 864000000
   oauth2:
-    # After successfully authenticating with the OAuth2 Provider,
-    # we'll be generating an auth token for the user and sending the token to the
-    # redirectUri mentioned by the frontend client in the /oauth2/authorize request.
-    # We're not using cookies because they won't work well in mobile clients.
+
     authorizedRedirectUris:
       - http://localhost:3000/oauth2/redirect
       - myandroidapp://oauth2/redirect

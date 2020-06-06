@@ -1,6 +1,7 @@
 package com.dataseer.app.service
 
 import com.dataseer.app.exception.FileStorageException
+import com.dataseer.app.model.DataHeader
 import com.dataseer.app.model.DataSet
 import com.dataseer.app.model.MimeTypes
 import com.dataseer.app.repository.DataSetRepository
@@ -9,6 +10,7 @@ import com.dataseer.app.security.Crypto
 import com.dataseer.app.security.SecurityContextProvider
 import com.dataseer.app.util.compressFile
 import com.dataseer.app.util.decompressFile
+import com.github.doyaaaaaken.kotlincsv.client.CsvReader
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -16,8 +18,12 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.util.StringUtils
 import org.springframework.web.multipart.MultipartFile
-import java.io.IOException
+import java.io.*
 import java.util.*
+import java.util.stream.Collectors
+import java.util.stream.IntStream
+import java.util.stream.Stream
+import kotlin.streams.asSequence
 
 /**
  * Secure DB persistence service for [DataSet] handling
@@ -53,17 +59,34 @@ class SecureDataSetStorageService {
         if (!validateFileType(file)) {
             throw Exception("Only csv files are allowed")
         }
+        //todo - put max 5 documents restriction
+        if (dataSetRepository.count(DataSetSpecifications.ofUser(securityContextProvider.getCurrentContextUser())) >= 5) {
+            throw FileStorageException("Sorry! Maximum threshold of files(5) ")
+        }
         val fileName = StringUtils.cleanPath(file.originalFilename!!)
         return try {
             // Check if the file's name contains invalid characters
             if (fileName.contains("..")) {
                 throw FileStorageException("Sorry! Filename contains invalid path sequence $fileName")
             }
+
+            val reader = BufferedReader(InputStreamReader(ByteArrayInputStream(file.bytes)))
+            val headers = reader.readLine().split(",")
+            IntStream.range(0, headers.size).mapToObj {
+                DataHeader(
+                        headerName = headers[it],
+                        isTimeIndex = it == 0,
+                        dataSet = dataSet
+                )
+            }.asSequence().iterator().forEach {
+                dataSet.headers.add(it)
+            }
+
             //encrypt and compress the file
             dataSet.data = transformDataToDB(file.bytes)
             dataSet.fileType = file.contentType!!
 
-            dataSetRepository.save(dataSet)
+            dataSetRepository.saveAndFlush(dataSet)
         } catch (ex: IOException) {
             logger.error(ex.toString())
             throw FileStorageException("Could not store file $fileName. Please try again!", ex)
@@ -72,8 +95,13 @@ class SecureDataSetStorageService {
         }
     }
 
-    fun validateFileType(file : MultipartFile) : Boolean {
-        return when(file.contentType) {
+    /**
+     * Check if the file type corresponds to the allowed ones
+     * @param file [MultipartFile]
+     * @return [Boolean] true if valid
+     */
+    fun validateFileType(file: MultipartFile): Boolean {
+        return when (file.contentType) {
             MimeTypes.MIME_TEXT_CSV -> true
             else -> false
         }
@@ -86,7 +114,7 @@ class SecureDataSetStorageService {
      */
     fun retrieveDataSet(fileId: Long): Optional<DataSet> {
 
-        return dataSetRepository.findByIdAndCreatedBy(fileId, securityContextProvider.getCurrentContextUser()!!)
+        return dataSetRepository.findByIdAndCreatedBy(fileId, securityContextProvider.getCurrentContextUser())
                 .also { dataSet ->
                     if (dataSet.isPresent) {
                         dataSet.get().data = transformDataFromDB(dataSet.get().data!!) //decompress and decrypt the data
@@ -100,7 +128,7 @@ class SecureDataSetStorageService {
      */
     fun retrieveDataSets(): List<DataSet> {
 
-        return dataSetRepository.findAll(DataSetSpecifications.ofUser(securityContextProvider.getCurrentContextUser()!!))
+        return dataSetRepository.findAll(DataSetSpecifications.ofUser(securityContextProvider.getCurrentContextUser()))
                 .also { dataSetList ->
                     dataSetList.forEach { dataSet ->
                         dataSet.data = transformDataFromDB(dataSet.data!!) //decompress and decrypt the data for each file
@@ -116,7 +144,7 @@ class SecureDataSetStorageService {
      */
     private fun transformDataToDB(data: ByteArray): ByteArray {
 
-        return Crypto.encryptData(securityContextProvider.getCurrentContextUser()!!.password!!, compressFile(data))!!
+        return Crypto.encryptData(securityContextProvider.getCurrentContextUser().password, compressFile(data))!!
     }
 
     /**
@@ -126,6 +154,14 @@ class SecureDataSetStorageService {
      */
     private fun transformDataFromDB(data: ByteArray): ByteArray {
 
-        return decompressFile(Crypto.decryptData(securityContextProvider.getCurrentContextUser()!!.password!!, data)!!)
+        return decompressFile(Crypto.decryptData(securityContextProvider.getCurrentContextUser().password, data)!!)
+    }
+
+    /**
+     * Delete a dataset
+     * @param dataSet [DataSet]
+     */
+    fun deleteDataSet(dataSet : DataSet) {
+        dataSetRepository.delete(dataSet)
     }
 }

@@ -124,8 +124,5 @@ class SecurityConfig : WebSecurityConfigurerAdapter() {
             .failureHandler(oAuth2AuthenticationFailureHandler);
 
         http.addFilterBefore(tokenAuthenticationFilter(), UsernamePasswordAuthenticationFilter::class.java)
-
-
-
     }
 }

@@ -13,7 +13,7 @@ import org.springframework.security.oauth2.core.user.OAuth2User
  * @author Blendica Vlad
  * @date 02.03.2020
  */
-class UserPrincipal(val id: Long?, val email: String, private val password: String, private val authorities: Collection<GrantedAuthority>) : OAuth2User, UserDetails {
+class UserPrincipal(val id: Long, val email: String, private val password: String, private val authorities: Collection<GrantedAuthority>) : OAuth2User, UserDetails {
     private var attributes: Map<String, Any>? = null
 
     override fun getPassword(): String {
