@@ -39,8 +39,13 @@ class DataSetController {
     fun uploadDataSet(@RequestParam("file") file: MultipartFile,
                       @RequestParam formData : MultiValueMap<String,String>): ResponseEntity<UploadFileResponse> {
 
+        if (file.isEmpty) {
+            ResponseEntity.status(HttpStatus.PARTIAL_CONTENT)
+                    .body(ApiResponse(false,"No file found in request"))
+        }
         val dataSet: DataSet = secureDataSetStorageService.storeDataSet(file, DataSet(
                 fileName = StringUtils.cleanPath(file.originalFilename!!),
+                name = formData["name"]!![0],
                 description = formData["description"]?.get(0)
         ))
 
@@ -100,4 +105,53 @@ class DataSetController {
 
         return ResponseEntity.ok().body(dataSets)
     }
+
+    /**
+     * Delete a dataSet
+     */
+    @PostMapping("/delete_dataset/{dataset_id}")
+    fun deleteDataset(@PathVariable dataset_id: Long) : ResponseEntity<*> {
+
+        val dataSet : Optional<DataSet> = secureDataSetStorageService.retrieveDataSet(dataset_id)
+        return if (dataSet.isPresent) {
+            secureDataSetStorageService.deleteDataSet(dataSet.get())
+            ResponseEntity.status(HttpStatus.OK)
+                    .body(ApiResponse(true,"DataSet with id: $dataset_id has been deleted"))
+        } else {
+            ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(ApiResponse(false,"No dataset with id: $dataset_id found"))
+        }
+    }
+
+    @PostMapping("/update_dataset/{dataset_id}")
+    fun updateDataset(@PathVariable dataset_id: Long, @RequestParam("file") file: MultipartFile?,
+                      @RequestParam formData : MultiValueMap<String,String>): ResponseEntity<*> {
+
+        val dataSetOptional : Optional<DataSet> = secureDataSetStorageService.retrieveDataSet(dataset_id)
+        val dataSet : DataSet
+        return if (dataSetOptional.isPresent) {
+            dataSet = dataSetOptional.get()
+            if (formData["name"] != null) {
+                dataSet.name = formData["name"]!![0].toString()
+            }
+            if (formData["description"] != null) {
+                dataSet.description = formData["description"]!![0].toString()
+            }
+            if (file != null && !file.isEmpty) {
+                dataSet.fileName = StringUtils.cleanPath(file.originalFilename!!)
+            }
+            secureDataSetStorageService.storeDataSet(file!!, dataSet);
+            val fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
+                    .path("/dataset/download_dataset_file/")
+                    .path(dataSet.id.toString())
+                    .toUriString()
+
+            return ResponseEntity.ok()
+                    .body(UploadFileResponse(dataSet.fileName, fileDownloadUri, dataSet.fileType!!, dataSet.data?.size!!.toLong()))
+        } else {
+            ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(ApiResponse(false,"No dataset with id: $dataset_id found"))
+        }
+    }
+
 }

@@ -18,12 +18,12 @@ data class User(
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         val id: Long? = null,
 
-        @Column(nullable = false)
-        var name: String? = null,
+        @Column(nullable = false, length = 60)
+        var name: String,
 
         @Email
-        @Column(nullable = false)
-        var email: String? = null,
+        @Column(nullable = false, length = 60)
+        var email: String,
 
         var imageUrl: String? = null,
 
@@ -31,7 +31,7 @@ data class User(
         val emailVerified: Boolean = false,
 
         @JsonIgnore
-        val password: String? = null,
+        val password: String,
 
         @Column(nullable = false, updatable = false)
         val creationDate: LocalDateTime = LocalDateTime.now(),

@@ -30,7 +30,7 @@ class DSCoreController {
                         @RequestParam("data_set_id") dataSetID : Long,
                       @RequestParam formData : MultiValueMap<String, String>): ResponseEntity<*> {
 
-        if (formData["x"].isNullOrEmpty()) {
+        if (formData["y"].isNullOrEmpty()) {
             throw ObsVariableMissingException
         }
         return dsCoreService.init(formData, dataSetID, file)
@@ -42,7 +42,7 @@ class DSCoreController {
                         @RequestParam("data_set_id") dataSetID : Long,
                         @RequestParam formData : MultiValueMap<String, String>): ResponseEntity<*> {
 
-        if (formData["x"].isNullOrEmpty()) {
+        if (formData["y"].isNullOrEmpty()) {
             throw ObsVariableMissingException
         }
         return dsCoreService.init(formData, dataSetID, file)
