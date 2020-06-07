@@ -43,12 +43,15 @@ class DataSetController {
             ResponseEntity.status(HttpStatus.PARTIAL_CONTENT)
                     .body(ApiResponse(false,"No file found in request"))
         }
+        if (formData["name"] == null) {
+            ResponseEntity.status(HttpStatus.PARTIAL_CONTENT)
+                    .body(ApiResponse(false,"No data set name specified"))
+        }
         val dataSet: DataSet = secureDataSetStorageService.storeDataSet(file, DataSet(
                 fileName = StringUtils.cleanPath(file.originalFilename!!),
                 name = formData["name"]!![0],
                 description = formData["description"]?.get(0)
         ))
-
         val fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path("/dataset/download_dataset_file/")
                 .path(dataSet.id.toString())
@@ -140,7 +143,7 @@ class DataSetController {
             if (file != null && !file.isEmpty) {
                 dataSet.fileName = StringUtils.cleanPath(file.originalFilename!!)
             }
-            secureDataSetStorageService.storeDataSet(file!!, dataSet);
+            secureDataSetStorageService.storeDataSet(file!!, dataSet)
             val fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
                     .path("/dataset/download_dataset_file/")
                     .path(dataSet.id.toString())

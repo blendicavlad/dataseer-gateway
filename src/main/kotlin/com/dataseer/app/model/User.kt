@@ -19,11 +19,11 @@ data class User(
         val id: Long? = null,
 
         @Column(nullable = false, length = 60)
-        var name: String,
+        var fullName: String? = null,
 
         @Email
         @Column(nullable = false, length = 60)
-        var email: String,
+        var email: String? = null,
 
         var imageUrl: String? = null,
 
@@ -31,7 +31,7 @@ data class User(
         val emailVerified: Boolean = false,
 
         @JsonIgnore
-        val password: String,
+        val password: String? = null,
 
         @Column(nullable = false, updatable = false)
         val creationDate: LocalDateTime = LocalDateTime.now(),

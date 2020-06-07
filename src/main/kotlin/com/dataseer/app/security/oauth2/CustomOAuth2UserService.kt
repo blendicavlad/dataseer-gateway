@@ -79,7 +79,7 @@ class CustomOAuth2UserService : DefaultOAuth2UserService() {
         val user = User()
         user.provider = AuthProvider.valueOf(oAuth2UserRequest.clientRegistration.registrationId)
         user.providerId = oAuth2UserInfo.id
-        user.name = oAuth2UserInfo.name
+        user.fullName = oAuth2UserInfo.name
         user.email = oAuth2UserInfo.email
         user.imageUrl = oAuth2UserInfo.imageUrl
         return userRepository.save(user)
@@ -92,7 +92,7 @@ class CustomOAuth2UserService : DefaultOAuth2UserService() {
      * @return [User]
      */
     private fun updateExistingUser(existingUser: User, oAuth2UserInfo: OAuth2UserInfo): User {
-        existingUser.name = oAuth2UserInfo.name
+        existingUser.fullName = oAuth2UserInfo.name
         existingUser.imageUrl = oAuth2UserInfo.imageUrl
         return userRepository.save(existingUser)
     }

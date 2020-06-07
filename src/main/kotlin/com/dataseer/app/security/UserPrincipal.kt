@@ -65,7 +65,7 @@ class UserPrincipal(val id: Long, val email: String, private val password: Strin
         fun create(user: User): UserPrincipal {
             val authorities: List<GrantedAuthority> = listOf(SimpleGrantedAuthority("ROLE_USER"))
             return UserPrincipal(
-                    user.id,
+                    user.id!!,
                     user.email!!,
                     user.password!!,
                     authorities

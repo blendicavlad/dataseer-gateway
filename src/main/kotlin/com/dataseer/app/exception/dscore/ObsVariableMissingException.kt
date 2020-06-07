@@ -6,5 +6,5 @@ import java.lang.RuntimeException
 
 @ResponseStatus(HttpStatus.BAD_REQUEST)
 object ObsVariableMissingException : RuntimeException() {
-    override val message = "The observed variable: 'x' is missing"
+    override val message = "The observed variable: 'y' is missing"
 }
