@@ -10,7 +10,7 @@ import javax.validation.constraints.NotBlank
  */
 data class SignUpRequest(
         @NotBlank
-        var name : String,
+        var fullName : String,
         @NotBlank
         @Email
         var email : String,

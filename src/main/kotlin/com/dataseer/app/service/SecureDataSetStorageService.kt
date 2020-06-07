@@ -102,7 +102,12 @@ class SecureDataSetStorageService {
      */
     fun validateFileType(file: MultipartFile): Boolean {
         return when (file.contentType) {
-            MimeTypes.MIME_TEXT_CSV -> true
+            MimeTypes.MIME_TEXT_CSV -> {
+                return true
+            }
+            MimeTypes.MIME_APPLICATION_VND_MSEXCEL -> {
+                return true
+            }
             else -> false
         }
     }
@@ -144,7 +149,7 @@ class SecureDataSetStorageService {
      */
     private fun transformDataToDB(data: ByteArray): ByteArray {
 
-        return Crypto.encryptData(securityContextProvider.getCurrentContextUser().password, compressFile(data))!!
+        return Crypto.encryptData(securityContextProvider.getCurrentContextUser().password!!, compressFile(data))!!
     }
 
     /**
@@ -154,7 +159,7 @@ class SecureDataSetStorageService {
      */
     private fun transformDataFromDB(data: ByteArray): ByteArray {
 
-        return decompressFile(Crypto.decryptData(securityContextProvider.getCurrentContextUser().password, data)!!)
+        return decompressFile(Crypto.decryptData(securityContextProvider.getCurrentContextUser().password!!, data)!!)
     }
 
     /**

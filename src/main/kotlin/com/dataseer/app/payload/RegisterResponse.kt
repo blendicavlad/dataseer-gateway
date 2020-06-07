@@ -5,9 +5,10 @@ package com.dataseer.app.payload
  * @author Blendica Vlad
  * @date 02.03.2020
  */
-data class AuthResponse(
-        val accessToken: String,
-        val fullName: String
+data class RegisterResponse(
+        val accessToken: String?,
+        val success: Boolean,
+        val message: String
 ) {
     val tokenType = "Bearer"
 }

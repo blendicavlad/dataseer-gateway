@@ -1,5 +1,6 @@
 package com.dataseer.app.model
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import javax.persistence.*
 
 @Entity
@@ -15,8 +16,9 @@ data class DataHeader(
         @Column
         var isTimeIndex : Boolean = false,
 
+        @JsonIgnore
         @ManyToOne(fetch = FetchType.EAGER)
-        @JoinColumn(name="id", nullable = false)
+        @JoinColumn(name="datasets.id", nullable = false)
         var dataSet: DataSet? = null
 ) {
     override fun equals(other: Any?): Boolean {
@@ -35,7 +37,6 @@ data class DataHeader(
         var result = id?.hashCode() ?: 0
         result = 31 * result + (headerName?.hashCode() ?: 0)
         result = 31 * result + (isTimeIndex?.hashCode() ?: 0)
-        result = 31 * result + (dataSet?.hashCode() ?: 0)
         return result
     }
 }
