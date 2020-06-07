@@ -10,6 +10,7 @@ import com.dataseer.app.repository.query_specifications.DataSetSpecifications
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.core.env.Environment
 import org.springframework.http.*
 import org.springframework.stereotype.Service
 import org.springframework.util.LinkedMultiValueMap
@@ -38,7 +39,10 @@ class DSCoreService {
     @Autowired
     lateinit var restTemplate: RestTemplate
 
-    private val dsCoreRoot = "http://localhost:8000/api/core/"
+    @Autowired
+    lateinit var env : Environment;
+
+    private lateinit var dsCoreRoot : String
 
     private lateinit var y: String
     private lateinit var x: String
@@ -53,6 +57,7 @@ class DSCoreService {
 
     @Throws(DSCoreException::class)
     fun init(valueMap: MultiValueMap<String, String>, dataSetID: Long, file: MultipartFile?): Function<DSMethod, ResponseEntity<DSCorePayload>> {
+        dsCoreRoot = env.getProperty("core.root")!!
         validateInput(file, dataSetID, valueMap)
         logger.trace("DSCoreService has been initialized: date - ${LocalDateTime.now()} ")
         return Function<DSMethod, ResponseEntity<DSCorePayload>> {
