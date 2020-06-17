@@ -7,7 +7,7 @@ spring:
   jpa:
     show-sql: true
     hibernate:
-      ddl-auto: update
+      ddl-auto: ${DDL_AUTO:update}
       naming-strategy: org.hibernate.cfg.ImprovedNamingStrategy
     properties:
       hibernate:
@@ -18,8 +18,8 @@ spring:
       client:
         registration:
           google:
-            clientId: 5014057553-8gm9um6vnli3cle5rgigcdjpdrid14m9.apps.googleusercontent.com
-            clientSecret: tWZKVLxaD_ARWsriiiUFYoIk
+            clientId: ${GOOGLE_CLIENT_ID:5014057553-8gm9um6vnli3cle5rgigcdjpdrid14m9.apps.googleusercontent.com}
+            clientSecret: ${GOOGLE_CLIENT_SECRET:tWZKVLxaD_ARWsriiiUFYoIk}
             redirectUriTemplate: "{baseUrl}/oauth2/callback/{registrationId}"
             scope:
               - email
@@ -29,17 +29,17 @@ spring:
     multipart:
       enabled: true
       file-size-threshold: 10MB
-      max-file-size: 300MB
-      max-request-size: 300MB
+      max-file-size: ${MAX_FILE_TRESHOLD:300MB}
+      max-request-size: ${MAX_REQUEST_SIZE:300MB}
 
 app:
   auth:
-    tokenSecret: 926D96C90030DD58429D2751AC1BDBBC
-    tokenExpirationMsec: 864000000
+    tokenSecret: ${TOKEN_SECRET:926D96C90030DD58429D2751AC1BDBBC}
+    tokenExpirationMsec: 3600000
   oauth2:
 
     authorizedRedirectUris:
-      - http://localhost:3000/oauth2/redirect
+      - ${REDIRECT_URI_01:http://localhost:3000/oauth2/redirect}
 file:
   upload-dir: users
 
@@ -53,4 +53,4 @@ logging:
               BasicBinder : TRACE
 
 core:
-  root: ${DS_CORE_ROOT:http://localhost:8000/api/core/}
+  root: ${DS_CORE_ROOT:localhost:8000/api/core/}

@@ -1,0 +1,24 @@
+POST {{local_url}}/auth/login
+Accept: application/json
+Content-Type: application/json
+
+{
+  "email" : "{{email}}",
+  "password": "{{password}}"
+}
+
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 200, "Response status is not 200");
+    });
+
+    client.test("Response content-type is json", function() {
+        var type = response.contentType.mimeType;
+        client.assert(type === "application/json", "Expected 'application/json' but received '" + type + "'");
+    });
+    client.assert(response['accessToken'] !== null, "Auth token not found")
+    client.global.set("temp_token", response.body.accessToken);
+    client.assert(response.body.accessToken === client.global.get("temp_token"), "Recieved and ENV token does not match")
+%}
+
+###

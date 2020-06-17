@@ -7,6 +7,7 @@ import com.dataseer.app.model.DSMethod
 import com.dataseer.app.model.DataSet
 import com.dataseer.app.model.MimeTypes
 import com.dataseer.app.repository.query_specifications.DataSetSpecifications
+import net.minidev.json.JSONObject
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -56,9 +57,9 @@ class DSCoreService {
     private var initialized: Boolean = false
 
     @Throws(DSCoreException::class)
-    fun init(valueMap: MultiValueMap<String, String>, dataSetID: Long, file: MultipartFile?): Function<DSMethod, ResponseEntity<DSCorePayload>> {
-        dsCoreRoot = env.getProperty("core.root")!!
-        validateInput(file, dataSetID, valueMap)
+    fun init(params: JSONObject, dataSetID: Long, file: MultipartFile?): Function<DSMethod, ResponseEntity<DSCorePayload>> {
+        dsCoreRoot = "http://" + env.getProperty("core.root")!!
+        validateInput(file, dataSetID, params)
         logger.trace("DSCoreService has been initialized: date - ${LocalDateTime.now()} ")
         return Function<DSMethod, ResponseEntity<DSCorePayload>> {
             getResponse(it)
@@ -66,7 +67,7 @@ class DSCoreService {
     }
 
     @Throws(Exception::class)
-    private fun validateInput(file: MultipartFile?, dataSetID: Long, valueMap: MultiValueMap<String, String>) {
+    private fun validateInput(file: MultipartFile?, dataSetID: Long, params: JSONObject) {
         var dataSet : DataSet? = null
         if (file == null || file.isEmpty) {
             dataSet = secureDataSetStorageService.retrieveDataSet(dataSetID).orElseThrow {
@@ -81,7 +82,7 @@ class DSCoreService {
         if (this.file.isEmpty())
             throw DSCoreException("File not found, please attach a csv file")
         this.dataSetID = dataSetID
-        if (valueMap["x"] == null) {
+        if (params["x"] == null) {
             val header = dataSet!!.headers.filter { it.isTimeIndex }[0].headerName
             if (header.isNullOrEmpty()) {
                 this.x = "0"
@@ -89,15 +90,20 @@ class DSCoreService {
                 this.x = header
             }
         } else {
-            this.x = valueMap["x"]!![0]
+            this.x = params["x"] as String
         }
-        this.y = valueMap["y"]!![0]
-        this.lamb = valueMap["lamb"]?.get(0)?.toLong()
-        this.span = valueMap["span"]?.get(0)?.toLong()
-        this.windows = valueMap["windows"]?.get(0)
-        this.trend = valueMap["trend"]?.get(0)
-        this.seasonal = valueMap["seasonal"]?.get(0)
-
+        this.y = params["y"]!! as String
+        this.lamb = params["lamb"] as? Long
+        this.span = params["span"] as? Long
+        this.windows = params["windows"] as? String
+        this.trend = params["trend"] as? String
+        if (this.trend != null && !(this.trend.equals("mul") || this.trend.equals("add"))) {
+            throw DSCoreException("Allowed trend values are: mul (multiplicative), add (additive)")
+        }
+        this.seasonal = params["seasonal"] as? String
+        if (this.seasonal != null && !(this.seasonal.equals("mul") || this.seasonal.equals("add"))) {
+            throw DSCoreException("Allowed seasonal values are: mul (multiplicative), add (additive)")
+        }
         if (this.x.isEmpty())
             throw DSCoreException("data_set_id is mandatory!")
     }

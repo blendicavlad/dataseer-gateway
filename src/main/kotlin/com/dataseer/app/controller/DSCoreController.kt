@@ -1,15 +1,14 @@
 package com.dataseer.app.controller
 
 import com.dataseer.app.exception.dscore.ObsVariableMissingException
+import com.dataseer.app.model.DSCorePayload
 import com.dataseer.app.model.DSMethod
 import com.dataseer.app.service.DSCoreService
+import net.minidev.json.JSONObject
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
 import org.springframework.util.MultiValueMap
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestParam
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
 
 /**
@@ -28,24 +27,105 @@ class DSCoreController {
     @PostMapping("/describe")
     fun describeDataSet(@RequestParam("file", required = false) file: MultipartFile?,
                         @RequestParam("data_set_id") dataSetID : Long,
-                      @RequestParam formData : MultiValueMap<String, String>): ResponseEntity<*> {
+                        @RequestBody body : Map<String, String>): ResponseEntity<DSCorePayload> {
 
-        if (formData["y"].isNullOrEmpty()) {
+        val jsonBody = JSONObject(body)
+        if (jsonBody["y"].toString().isEmpty()) {
             throw ObsVariableMissingException
         }
-        return dsCoreService.init(formData, dataSetID, file)
+        return dsCoreService.init(jsonBody, dataSetID, file)
                 .apply(DSMethod.DESCRIBE)
     }
 
     @PostMapping("/ets_seasonal_decompose")
     fun etsSeasonalDecompose(@RequestParam("file", required = false) file: MultipartFile?,
                         @RequestParam("data_set_id") dataSetID : Long,
-                        @RequestParam formData : MultiValueMap<String, String>): ResponseEntity<*> {
+                        @RequestBody body : Map<String, String>): ResponseEntity<DSCorePayload> {
 
-        if (formData["y"].isNullOrEmpty()) {
+        val jsonBody = JSONObject(body)
+        if (jsonBody["y"].toString().isEmpty()) {
             throw ObsVariableMissingException
         }
-        return dsCoreService.init(formData, dataSetID, file)
+        return dsCoreService.init(jsonBody, dataSetID, file)
                 .apply(DSMethod.ETS_SEASONAL_DECOMPOSE)
     }
+
+    @PostMapping("/hp_filter")
+    fun hpFilter(@RequestParam("file", required = false) file: MultipartFile?,
+                             @RequestParam("data_set_id") dataSetID : Long,
+                             @RequestBody body : Map<String, String>): ResponseEntity<DSCorePayload> {
+
+        val jsonBody = JSONObject(body)
+        if (jsonBody["y"].toString().isEmpty()) {
+            throw ObsVariableMissingException
+        }
+        return dsCoreService.init(jsonBody, dataSetID, file)
+                .apply(DSMethod.HODRICK_PRESCOTT_FILTER)
+    }
+
+    @PostMapping("/simple_moving_avg")
+    fun simpleMovingAvg(@RequestParam("file", required = false) file: MultipartFile?,
+                 @RequestParam("data_set_id") dataSetID : Long,
+                 @RequestBody body : Map<String, String>): ResponseEntity<DSCorePayload> {
+
+        val jsonBody = JSONObject(body)
+        if (jsonBody["y"].toString().isEmpty()) {
+            throw ObsVariableMissingException
+        }
+        return dsCoreService.init(jsonBody, dataSetID, file)
+                .apply(DSMethod.SIMPLE_MOVING_AVERAGE)
+    }
+
+    @PostMapping("/exp_weighted_mov_avg")
+    fun expWeightedMovingAvg(@RequestParam("file", required = false) file: MultipartFile?,
+                        @RequestParam("data_set_id") dataSetID : Long,
+                        @RequestBody body : Map<String, String>): ResponseEntity<DSCorePayload> {
+
+        val jsonBody = JSONObject(body)
+        if (jsonBody["y"].toString().isEmpty()) {
+            throw ObsVariableMissingException
+        }
+        return dsCoreService.init(jsonBody, dataSetID, file)
+                .apply(DSMethod.EXP_WEIGHTED_MOVING_AVERAGE)
+    }
+
+    @PostMapping("/simple_exp_smoothing")
+    fun simpleExpSmoothing(@RequestParam("file", required = false) file: MultipartFile?,
+                        @RequestParam("data_set_id") dataSetID : Long,
+                        @RequestBody body : Map<String, String>): ResponseEntity<DSCorePayload> {
+
+        val jsonBody = JSONObject(body)
+        if (jsonBody["y"].toString().isEmpty()) {
+            throw ObsVariableMissingException
+        }
+        return dsCoreService.init(jsonBody, dataSetID, file)
+                .apply(DSMethod.SIMPLE_MOVING_AVERAGE)
+    }
+
+    @PostMapping("/double_exp_smoothing")
+    fun doubleExpSmoothing(@RequestParam("file", required = false) file: MultipartFile?,
+                           @RequestParam("data_set_id") dataSetID : Long,
+                           @RequestBody body : Map<String, String>): ResponseEntity<DSCorePayload> {
+
+        val jsonBody = JSONObject(body)
+        if (jsonBody["y"].toString().isEmpty()) {
+            throw ObsVariableMissingException
+        }
+        return dsCoreService.init(jsonBody, dataSetID, file)
+                .apply(DSMethod.SIMPLE_MOVING_AVERAGE)
+    }
+
+    @PostMapping("/triple_exp_smoothing")
+    fun tripleExpSmoothing(@RequestParam("file", required = false) file: MultipartFile?,
+                           @RequestParam("data_set_id") dataSetID : Long,
+                           @RequestBody body : Map<String, String>): ResponseEntity<DSCorePayload> {
+
+        val jsonBody = JSONObject(body)
+        if (jsonBody["y"].toString().isEmpty()) {
+            throw ObsVariableMissingException
+        }
+        return dsCoreService.init(jsonBody, dataSetID, file)
+                .apply(DSMethod.SIMPLE_MOVING_AVERAGE)
+    }
+
 }

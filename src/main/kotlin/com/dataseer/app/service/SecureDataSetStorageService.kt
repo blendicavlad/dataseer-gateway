@@ -59,7 +59,6 @@ class SecureDataSetStorageService {
         if (!validateFileType(file)) {
             throw Exception("Only csv files are allowed")
         }
-        //todo - put max 5 documents restriction
         if (dataSetRepository.count(DataSetSpecifications.ofUser(securityContextProvider.getCurrentContextUser())) >= 5) {
             throw FileStorageException("Sorry! Maximum threshold of files(5) ")
         }
