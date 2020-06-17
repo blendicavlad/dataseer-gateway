@@ -1,0 +1,31 @@
+POST {{local_url}}/dataset/upload_dataset
+Authorization: Bearer {{temp_token}}
+Accept-Encoding: gzip, deflate, br
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="file"; filename="macrodata.csv"
+Content-Type: text/csv
+
+< ../../../../mock_data/macrodata.csv
+--boundary
+Content-Disposition: form-data; name="name";
+
+SD-01
+--boundary
+Content-Disposition: form-data; name="description";
+
+Date macroeconomice din US
+--boundary
+
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 200, "Response status is not 200");
+    });
+
+    client.test("Response content-type is json", function() {
+        var type = response.contentType.mimeType;
+        client.assert(type === "application/json", "Expected 'application/json' but received '" + type + "'");
+    });
+%}
+###

@@ -1,0 +1,11 @@
+POST {{local_url}}/auth/signup
+Accept: application/json
+Content-Type: application/json
+
+{
+  "fullName" : "{{full_name}}",
+  "email" : "{{email}}",
+  "password" : "{{parola}}"
+}
+
+###

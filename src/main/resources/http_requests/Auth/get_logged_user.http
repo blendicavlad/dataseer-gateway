@@ -1,0 +1,5 @@
+GET {{local_url}}/user/me
+Accept: application/json
+Content-Type: application/json
+Authorization:Bearer {{temp_token}}
+###

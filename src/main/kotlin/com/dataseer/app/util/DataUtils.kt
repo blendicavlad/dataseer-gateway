@@ -43,21 +43,3 @@ fun decompressFile(file : ByteArray): ByteArray {
     gis.close()
     return content.toByteArray()
 }
-
-fun main() {
-    //todo to be moved in unit test
-    val key = "test"
-    val toBeCompressed = "aaaaaaaaaaaaaatestttttttttttttttttttasdfghjkzzzzzzxxxxxccccaaaaaaaaaaaaaat" +
-            "estttttttttttttttttttasdfghjkzzzzzzxxxxxccccaaaaaaaaaaaaaatestttttttttttttttttttasdfghj" +
-            "kzzzzzzxxxxxccccaaaaaaaaaaaaaatestttttttttttttttttttasdfghjkzzzzzzxxxxxccccaaaaaaaaaaaa" +
-            "aatestttttttttttttttttttasdfghjkzzzzzzxxxxxccccaaaaaaaaaaaaaatestttttttttttttttttttasdf" +
-            "ghjkzzzzzzxxxxxccccaaaaaaaaaaaaaatestttttttttttttttttttasdfghjkzzzzzzxxxxxccccaaaaaaaaa" +
-            "aaaaatestttttttttttttttttttasdfghjkzzzzzzxxxxxccccaaaaaaaaaaaaaatesttttttttttttttttttta" +
-            "sdfghjkzzzzzzxxxxxcccc"
-
-    val data = compressFile(toBeCompressed.toByteArray())
-//    val encriptedData = Crypto.encryptData(key,data)
-//    val decriptedData = Crypto.decryptData(key,encriptedData)
-    val result = decompressFile(data)
-    if (toBeCompressed.toByteArray().contentEquals(result)) println("Merge")
-}

@@ -22,6 +22,6 @@ class AuditorAwareImpl : AuditorAware<User> {
     override fun getCurrentAuditor(): Optional<User> {
         //Being a class out of Spring Context we need to manually inject it from there
         securityContextProvider = BeanProvider.getBean(SecurityContextProvider::class.java)
-        return Optional.of(securityContextProvider.getCurrentContextUser()!!)
+        return Optional.of(securityContextProvider.getCurrentContextUser())
     }
 }

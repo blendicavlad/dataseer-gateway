@@ -1,5 +1,0 @@
-GET localhost:8080/dataset/get_dataset/7
-Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNTg1NjkxOTg0LCJleHAiOjE1ODY1NTU5ODR9.TZRACrx8U5DZpIUmxi3AAaxCq7ynogQLHfmhUFZeFgXg4HiJTP65MH3K4T82LviU51SzOWI1gQhPsBitP_BmIQ
-Accept: application/json
-Content-Type: application/json
-###
