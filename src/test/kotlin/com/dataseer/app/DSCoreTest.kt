@@ -6,6 +6,7 @@ import com.dataseer.app.model.DSCorePayload
 import com.dataseer.app.payload.LoginRequest
 import com.dataseer.app.service.SecureDataSetStorageService
 import com.fasterxml.jackson.databind.ObjectMapper
+import net.minidev.json.JSONObject
 import org.apache.tomcat.util.json.JSONParser
 import org.junit.Assert
 import org.junit.Before
@@ -80,7 +81,7 @@ class DSCoreTest {
         val mapper = ObjectMapper()
         val stream = FileReader("src/test/resources/test_responses/etsdecompose.json")
         val expected = mapper.readValue(stream, DSCorePayload::class.java)
-        val response = dsCoreController.etsSeasonalDecompose(null, 1, mapOf("y" to "realdpi"))
+        val response = dsCoreController.etsSeasonalDecompose(null, 1, JSONObject(mapOf("y" to "realdpi")))
         val actual : DSCorePayload = response.body!!
         Assert.assertNotNull(response)
         Assert.assertEquals("TEST ETS_DECOMPOSE", expected, actual)
@@ -89,14 +90,11 @@ class DSCoreTest {
     @Test
     fun testDescribeData() {
         val mapper = ObjectMapper()
-        val stream = FileReader("src/test/resources/test_responses/etsdecompose.json")
+        val stream = FileReader("src/test/resources/test_responses/describe.json")
         val expected = mapper.readValue(stream, DSCorePayload::class.java)
-        val response = dsCoreController.describeDataSet(null, 1, mapOf("y" to "realdpi"))
+        val response = dsCoreController.describeDataSet(null, 1, JSONObject(mapOf("y" to "realdpi")))
         val actual : DSCorePayload = response.body!!
         Assert.assertNotNull(response)
-        Assert.assertEquals("TEST ETS_DECOMPOSE", expected, actual)
+        Assert.assertEquals("TEST DESCRIBE", expected, actual)
     }
-
-    
-
 }

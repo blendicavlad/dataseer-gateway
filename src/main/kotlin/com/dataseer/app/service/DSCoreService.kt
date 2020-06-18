@@ -2,6 +2,7 @@ package com.dataseer.app.service
 
 import com.dataseer.app.exception.ResourceNotFoundException
 import com.dataseer.app.exception.dscore.DSCoreException
+import com.dataseer.app.exception.dscore.ObsVariableMissingException
 import com.dataseer.app.model.DSCorePayload
 import com.dataseer.app.model.DSMethod
 import com.dataseer.app.model.DataSet
@@ -48,27 +49,42 @@ class DSCoreService {
     private lateinit var y: String
     private lateinit var x: String
     private lateinit var file: ByteArray
-    private var dataSetID: Long = 0x00
+    private var dataSetID: Long = 0L
     private var lamb: Long? = null
     private var span: Long? = null
     private var windows: String? = null
     private var trend: String? = null
     private var seasonal: String? = null
     private var initialized: Boolean = false
+    private var freq: String? = null
+    private var forecastPeriods: String? = null
+    private var model: String? = null
+    private var method: String? = null
+    private var trainPercent: Int? = null
 
     @Throws(DSCoreException::class)
     fun init(params: JSONObject, dataSetID: Long, file: MultipartFile?): Function<DSMethod, ResponseEntity<DSCorePayload>> {
         dsCoreRoot = "http://" + env.getProperty("core.root")!!
         validateInput(file, dataSetID, params)
         logger.trace("DSCoreService has been initialized: date - ${LocalDateTime.now()} ")
-        return Function<DSMethod, ResponseEntity<DSCorePayload>> {
+        return Function {
             getResponse(it)
         }
     }
 
+    /**
+     * TODO
+     * Posibil refactoring: sa inlociuesc param: JSONObject cu o interfata generica ex CoreMethod
+     * fiecare obiect de parametrii trebuie sa fie un obiect reprezentativ al modelului folosit
+     * metodele din controller sa primeasca obiectul in sine si sa returneze interfata
+     * as scapa de atatea setari de proprietati cand as putea seta/folosi un singur obiect
+     */
     @Throws(Exception::class)
     private fun validateInput(file: MultipartFile?, dataSetID: Long, params: JSONObject) {
         var dataSet : DataSet? = null
+        if (params["y"].toString().isEmpty()) {
+            throw ObsVariableMissingException
+        }
         if (file == null || file.isEmpty) {
             dataSet = secureDataSetStorageService.retrieveDataSet(dataSetID).orElseThrow {
                 ResourceNotFoundException("data_set", "id", dataSetID)
@@ -99,7 +115,7 @@ class DSCoreService {
         this.trend = params["trend"] as? String
         if (this.trend != null && !(this.trend.equals("mul") || this.trend.equals("add"))) {
             throw DSCoreException("Allowed trend values are: mul (multiplicative), add (additive)")
-        }
+        } //todo de fixat toti parametrii
         this.seasonal = params["seasonal"] as? String
         if (this.seasonal != null && !(this.seasonal.equals("mul") || this.seasonal.equals("add"))) {
             throw DSCoreException("Allowed seasonal values are: mul (multiplicative), add (additive)")
@@ -145,24 +161,21 @@ class DSCoreService {
         val fileEntity: HttpEntity<ByteArray> = HttpEntity(this.file, fileMap)
         body.add("file", fileEntity)
         body.add("x", this.x)
+        body.add("y", this.y)
 
         return when (dsMethod) {
             DSMethod.DESCRIBE, DSMethod.ETS_SEASONAL_DECOMPOSE -> {
-                body.add("y", this.y)
                 Request(url + dsMethod.value, body)
             }
             DSMethod.HODRICK_PRESCOTT_FILTER -> {
-                body.add("y", this.y)
                 body.add("lamb", this.lamb!!)
                 Request(url + dsMethod.value, body)
             }
             DSMethod.SIMPLE_MOVING_AVERAGE -> {
-                body.add("y", this.y)
                 body.add("windows", this.windows!!)
                 Request(url + dsMethod.value, body)
             }
             DSMethod.EXP_WEIGHTED_MOVING_AVERAGE, DSMethod.SIMPLE_EXP_SMOOTHING, DSMethod.DOUBLE_EXP_SMOOTHING, DSMethod.TRIPLE_EXP_SMOOTHING -> {
-                body.add("y", this.y)
                 body.add("span", this.span!!)
                 if (dsMethod == DSMethod.DOUBLE_EXP_SMOOTHING) {
                     body.add("trend", this.trend!!)
@@ -170,6 +183,18 @@ class DSCoreService {
                 if (dsMethod == DSMethod.TRIPLE_EXP_SMOOTHING) {
                     body.add("trend", this.trend!!)
                     body.add("seasonal", this.seasonal!!)
+                }
+                Request(url + dsMethod.value, body)
+            }
+            DSMethod.HW_FORECAST, DSMethod.AUTO_REGRESSION -> {
+                body.add("freq", this.freq)
+                body.add("forecast_periods", this.forecastPeriods)
+                body.add("train_percent", this.trainPercent)
+                if (dsMethod == DSMethod.AUTO_REGRESSION) {
+                    body.add("method", this.method)
+                }
+                if (dsMethod == DSMethod.HW_FORECAST) {
+                    body.add("model", this.model)
                 }
                 Request(url + dsMethod.value, body)
             }
