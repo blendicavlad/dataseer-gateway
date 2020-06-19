@@ -2,6 +2,7 @@ package com.dataseer.app
 
 import com.dataseer.app.controller.AuthController
 import com.dataseer.app.controller.DSCoreController
+import com.dataseer.app.exception.dscore.DSCoreException
 import com.dataseer.app.model.DSCorePayload
 import com.dataseer.app.payload.LoginRequest
 import com.dataseer.app.service.SecureDataSetStorageService
@@ -72,7 +73,7 @@ class DSCoreTest {
         }
         val expected = JSONParser(FileReader("src/test/resources/test_responses/etsdecompose.json")).parse()
         val actual = JSONParser(response!!.body!!.trim()).parse()
-        Assert.assertNotNull(response)
+        Assert.assertNotNull("The response is empty", response)
         Assert.assertEquals("TEST RAW HTTP POST TO ETS DECOMPOSE", expected, actual)
     }
 
@@ -81,10 +82,11 @@ class DSCoreTest {
         val mapper = ObjectMapper()
         val stream = FileReader("src/test/resources/test_responses/etsdecompose.json")
         val expected = mapper.readValue(stream, DSCorePayload::class.java)
-        val response = dsCoreController.etsSeasonalDecompose(null, 1, JSONObject(mapOf("y" to "realdpi")))
+        val response = dsCoreController
+                .etsSeasonalDecompose(null, 1, JSONObject(mapOf("y" to "realdpi")))
         val actual : DSCorePayload = response.body!!
-        Assert.assertNotNull(response)
-        Assert.assertEquals("TEST ETS_DECOMPOSE", expected, actual)
+        Assert.assertNotNull("The response is empty", response)
+        Assert.assertEquals("Altered response", expected, actual)
     }
 
     @Test
@@ -92,9 +94,149 @@ class DSCoreTest {
         val mapper = ObjectMapper()
         val stream = FileReader("src/test/resources/test_responses/describe.json")
         val expected = mapper.readValue(stream, DSCorePayload::class.java)
-        val response = dsCoreController.describeDataSet(null, 1, JSONObject(mapOf("y" to "realdpi")))
+        val response = dsCoreController
+                .describeDataSet(null, 1, JSONObject(mapOf("y" to "realdpi")))
         val actual : DSCorePayload = response.body!!
-        Assert.assertNotNull(response)
-        Assert.assertEquals("TEST DESCRIBE", expected, actual)
+        Assert.assertNotNull("The response is empty", response)
+        Assert.assertEquals("Altered response", expected, actual)
+    }
+
+    @Test
+    fun testHpFilter() {
+        val mapper = ObjectMapper()
+        val stream = FileReader("src/test/resources/test_responses/hp_filter.json")
+        val expected = mapper.readValue(stream, DSCorePayload::class.java)
+        var response = dsCoreController
+                .hpFilter(null, 1, JSONObject(mapOf("y" to "realdpi", "lamb" to 200)))
+        var actual : DSCorePayload = response.body!!
+        Assert.assertNotNull("The response is empty",response)
+        Assert.assertNotEquals("The data must be different", response)
+        response = dsCoreController.hpFilter(
+                null,
+                1,
+                JSONObject(mapOf("y" to "realdpi", "lamb" to 1600)))
+        actual = response.body!!
+        Assert.assertNotNull("The response is empty",response)
+        Assert.assertEquals("Altered response", expected, actual)
+    }
+
+    @Test
+    fun testSimpleMovingAvg() {
+        val mapper = ObjectMapper()
+        val stream = FileReader("src/test/resources/test_responses/simple_moving_avg.json")
+        val expected = mapper.readValue(stream, DSCorePayload::class.java)
+        var response = dsCoreController
+                .simpleMovingAvg(null, 1, JSONObject(mapOf("y" to "realdpi", "windows" to arrayListOf(6,8))))
+        Assert.assertNotNull("The response is empty",response)
+        Assert.assertNotEquals("The data must be different", response)
+        response = dsCoreController.simpleMovingAvg(
+                null,
+                1,
+                JSONObject(mapOf("y" to "realdpi", "windows" to arrayListOf(6,12))))
+        val actual = response.body!!
+        Assert.assertNotNull("The response is empty",response)
+        Assert.assertEquals("Altered response", expected, actual)
+    }
+
+    @Test
+    fun testExpWeightedMovingAvg() {
+        val mapper = ObjectMapper()
+        val stream = FileReader("src/test/resources/test_responses/exp_weighted_moving_avg.json")
+        val expected = mapper.readValue(stream, DSCorePayload::class.java)
+        var response = dsCoreController.expWeightedMovingAvg(
+                null,
+                1,
+                JSONObject(mapOf("y" to "realdpi", "span" to 6, "trend" to "mul", "adjust" to true)))
+        Assert.assertNotNull("The response is empty",response)
+        Assert.assertNotEquals("The data must be different", response)
+        response = dsCoreController.expWeightedMovingAvg(
+                null,
+                1,
+                JSONObject(mapOf("y" to "realdpi", "span" to 12, "trend" to "add", "adjust" to false)))
+        val actual = response.body!!
+        Assert.assertNotNull("The response is empty",response)
+        Assert.assertEquals("Altered response", expected, actual)
+    }
+
+    @Test
+    fun simpleExpSmoothing() {
+        val mapper = ObjectMapper()
+        val stream = FileReader("src/test/resources/test_responses/simple_exp_smoothing.json")
+        val expected = mapper.readValue(stream, DSCorePayload::class.java)
+        var response = dsCoreController.simpleExpSmoothing(
+                null,
+                1,
+                JSONObject(mapOf("y" to "realdpi", "span" to 6)))
+        Assert.assertNotNull("The response is empty",response)
+        Assert.assertNotEquals("The data must be different", response)
+        response = dsCoreController.simpleExpSmoothing(
+                null,
+                1,
+                JSONObject(mapOf("y" to "realdpi", "span" to 12)))
+        val actual = response.body!!
+        Assert.assertNotNull("The response is empty",response)
+        Assert.assertEquals("Altered response", expected, actual)
+    }
+
+    @Test
+    fun doubleExpSmoothing() {
+        val mapper = ObjectMapper()
+        val stream = FileReader("src/test/resources/test_responses/double_exp_smoothing.json")
+        val expected = mapper.readValue(stream, DSCorePayload::class.java)
+        var thrown : Boolean = false
+        var response : ResponseEntity<DSCorePayload>
+        try {
+            response = dsCoreController.doubleExpSmoothing(
+                    null,
+                    1,
+                    JSONObject(mapOf("y" to "realdpi", "span" to 6, "trend" to "asd")))
+        } catch (e: DSCoreException) {
+            thrown = true
+            Assert.assertEquals("Allowed trend values are: mul (multiplicative), add (additive)", e.message)
+        }
+        response = dsCoreController.doubleExpSmoothing(
+                null,
+                1,
+                JSONObject(mapOf("y" to "realdpi", "span" to 6, "trend" to "add")))
+        Assert.assertNotNull("The response is empty",response)
+        Assert.assertNotEquals("The data must be different", response)
+        response = dsCoreController.doubleExpSmoothing(
+                null,
+                1,
+                JSONObject(mapOf("y" to "realdpi", "span" to 12, "trend" to "add")))
+        val actual = response.body!!
+        Assert.assertNotNull("The response is empty",response)
+        Assert.assertEquals("Altered response", expected, actual)
+    }
+
+    @Test
+    fun tripleExpSmoothing() {
+        val mapper = ObjectMapper()
+        val stream = FileReader("src/test/resources/test_responses/triple_exp_smoothing.json")
+        val expected = mapper.readValue(stream, DSCorePayload::class.java)
+        var thrown : Boolean = false
+        var response : ResponseEntity<DSCorePayload>
+        try {
+            response = dsCoreController.tripleExpSmoothing(
+                    null,
+                    9,
+                    JSONObject(mapOf("y" to "realdpi", "span" to 6, "trend" to "asd")))
+        } catch (e: DSCoreException) {
+            thrown = true
+            Assert.assertEquals("Allowed trend values are: mul (multiplicative), add (additive)", e.message)
+        }
+        response = dsCoreController.tripleExpSmoothing(
+                null,
+                9,
+                JSONObject(mapOf("y" to "realdpi", "span" to 6, "trend" to "mul", "seasonal" to "mul")))
+        Assert.assertNotNull("The response is empty",response)
+        Assert.assertNotEquals("The data must be different", response)
+        response = dsCoreController.tripleExpSmoothing(
+                null,
+                9,
+                JSONObject(mapOf("y" to "realdpi", "span" to 12, "trend" to "mul", "seasonal" to "mul")))
+        val actual = response.body!!
+        Assert.assertNotNull("The response is empty",response)
+        Assert.assertEquals("Altered response", expected, actual)
     }
 }

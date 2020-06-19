@@ -1,4 +1,4 @@
-GET {{local_url}}/dataset/get_dataset/9
+POST {{local_url}}/dataset/delete_dataset/9
 Authorization: Bearer {{temp_token}}
 Accept: application/json
 Content-Type: application/json

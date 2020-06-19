@@ -20,6 +20,7 @@ import org.springframework.util.MultiValueMap
 import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.client.RestTemplate
 import org.springframework.web.multipart.MultipartFile
+import java.lang.ClassCastException
 import java.time.LocalDateTime
 import java.util.function.Function
 
@@ -42,7 +43,7 @@ class DSCoreService {
     lateinit var restTemplate: RestTemplate
 
     @Autowired
-    lateinit var env : Environment;
+    lateinit var env : Environment
 
     private lateinit var dsCoreRoot : String
 
@@ -50,17 +51,18 @@ class DSCoreService {
     private lateinit var x: String
     private lateinit var file: ByteArray
     private var dataSetID: Long = 0L
-    private var lamb: Long? = null
-    private var span: Long? = null
-    private var windows: String? = null
+    private var lamb: Int? = 1600
+    private var span: Int? = null
+    private var windows: List<Int>? = null
+    private var adjust = false
     private var trend: String? = null
     private var seasonal: String? = null
     private var initialized: Boolean = false
     private var freq: String? = null
-    private var forecastPeriods: String? = null
-    private var model: String? = null
-    private var method: String? = null
-    private var trainPercent: Int? = null
+    private var forecastPeriods: Int? = null
+    private var model: String? = "mul"
+    private var method: String? = "mle"
+    private var trainPercent: Int? = 80
 
     @Throws(DSCoreException::class)
     fun init(params: JSONObject, dataSetID: Long, file: MultipartFile?): Function<DSMethod, ResponseEntity<DSCorePayload>> {
@@ -73,11 +75,7 @@ class DSCoreService {
     }
 
     /**
-     * TODO
-     * Posibil refactoring: sa inlociuesc param: JSONObject cu o interfata generica ex CoreMethod
-     * fiecare obiect de parametrii trebuie sa fie un obiect reprezentativ al modelului folosit
-     * metodele din controller sa primeasca obiectul in sine si sa returneze interfata
-     * as scapa de atatea setari de proprietati cand as putea seta/folosi un singur obiect
+     * TODO Refactoring
      */
     @Throws(Exception::class)
     private fun validateInput(file: MultipartFile?, dataSetID: Long, params: JSONObject) {
@@ -109,14 +107,24 @@ class DSCoreService {
             this.x = params["x"] as String
         }
         this.y = params["y"]!! as String
-        this.lamb = params["lamb"] as? Long
-        this.span = params["span"] as? Long
-        this.windows = params["windows"] as? String
-        this.trend = params["trend"] as? String
+        try {
+            params["lamb"]?.let { this.lamb = it as Int }
+            params["span"]?.let { this.span = it as Int }
+            params["adjust"]?.let { this.adjust = it as Boolean }
+            params["windows"]?.let { this.windows = it as List<Int> }
+            params["trend"]?.let { this.trend = it as String }
+            params["seasonal"]?.let { this.seasonal = it as String }
+            params["freq"]?.let { this.freq = it as String }
+            params["periods"]?.let { this.forecastPeriods = it as Int }
+            params["model"]?.let { this.model = it as String }
+            params["train_percent"]?.let { this.trainPercent = it as Int }
+            params["method"]?.let { this.method = it as String }
+        } catch (e: ClassCastException) {
+            throw DSCoreException("One of the parameters has the wrong data type")
+        }
         if (this.trend != null && !(this.trend.equals("mul") || this.trend.equals("add"))) {
             throw DSCoreException("Allowed trend values are: mul (multiplicative), add (additive)")
-        } //todo de fixat toti parametrii
-        this.seasonal = params["seasonal"] as? String
+        }
         if (this.seasonal != null && !(this.seasonal.equals("mul") || this.seasonal.equals("add"))) {
             throw DSCoreException("Allowed seasonal values are: mul (multiplicative), add (additive)")
         }
@@ -177,6 +185,10 @@ class DSCoreService {
             }
             DSMethod.EXP_WEIGHTED_MOVING_AVERAGE, DSMethod.SIMPLE_EXP_SMOOTHING, DSMethod.DOUBLE_EXP_SMOOTHING, DSMethod.TRIPLE_EXP_SMOOTHING -> {
                 body.add("span", this.span!!)
+                if (dsMethod == DSMethod.EXP_WEIGHTED_MOVING_AVERAGE) {
+                    body.add("trend", this.trend)
+                    body.add("adjust", this.adjust)
+                }
                 if (dsMethod == DSMethod.DOUBLE_EXP_SMOOTHING) {
                     body.add("trend", this.trend!!)
                 }
@@ -188,7 +200,7 @@ class DSCoreService {
             }
             DSMethod.HW_FORECAST, DSMethod.AUTO_REGRESSION -> {
                 body.add("freq", this.freq)
-                body.add("forecast_periods", this.forecastPeriods)
+                body.add("periods", this.forecastPeriods)
                 body.add("train_percent", this.trainPercent)
                 if (dsMethod == DSMethod.AUTO_REGRESSION) {
                     body.add("method", this.method)

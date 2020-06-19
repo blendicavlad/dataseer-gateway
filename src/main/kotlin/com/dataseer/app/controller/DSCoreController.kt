@@ -1,6 +1,5 @@
 package com.dataseer.app.controller
 
-import com.dataseer.app.exception.dscore.ObsVariableMissingException
 import com.dataseer.app.model.DSCorePayload
 import com.dataseer.app.model.DSMethod
 import com.dataseer.app.service.DSCoreService
