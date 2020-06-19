@@ -32,7 +32,7 @@ data class DataSet(
         @Lob
         var data: ByteArray? = null,
 
-        @OneToMany(mappedBy = "dataSet", cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
+        @OneToMany(mappedBy = "dataSet", cascade = [CascadeType.ALL], fetch = FetchType.EAGER, orphanRemoval = true)
         val headers : MutableSet<DataHeader> = mutableSetOf()
 
 ) : Auditable() {

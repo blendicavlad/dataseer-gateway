@@ -1,7 +1,15 @@
-GET {{local_url}}/dataset/get_dataset/9
-Authorization: Bearer {{temp_token}}
+POST {{local_url}}/core/hw_forecast?data_set_id=10
 Accept: application/json
+Authorization: Bearer {{temp_token}}
 Content-Type: application/json
+
+{
+  "y" : "Thousands of Passengers",
+  "freq" : "Month",
+  "periods": 36,
+  "model" : "mul",
+  "train_percent" : 80
+}
 
 > {%
     client.test("Request executed successfully", function() {

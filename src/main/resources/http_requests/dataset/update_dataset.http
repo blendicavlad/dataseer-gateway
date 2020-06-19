@@ -1,4 +1,4 @@
-POST {{local_url}}/dataset/upload_dataset
+POST {{local_url}}/dataset/update_dataset
 Authorization: Bearer {{temp_token}}
 Accept-Encoding: gzip, deflate, br
 Content-Type: multipart/form-data; boundary=boundary
