@@ -125,6 +125,13 @@ class DSCoreService {
         if (this.trend != null && !(this.trend.equals("mul") || this.trend.equals("add"))) {
             throw DSCoreException("Allowed trend values are: mul (multiplicative), add (additive)")
         }
+        if (this.model != null && !(this.model.equals("mul") || this.model.equals("add"))) {
+            throw DSCoreException("Allowed model values are: mul (multiplicative), add (additive)")
+        }
+        if (this.method != null && !(this.method.equals("mle") || this.method.equals("cmle"))) {
+            throw DSCoreException("Allowed method values are: cmle (Conditional maximum likelihood using OLS)," +
+                    " mle (Unconditional (exact) maximum likelihood)")
+        }
         if (this.seasonal != null && !(this.seasonal.equals("mul") || this.seasonal.equals("add"))) {
             throw DSCoreException("Allowed seasonal values are: mul (multiplicative), add (additive)")
         }
@@ -208,6 +215,9 @@ class DSCoreService {
                 if (dsMethod == DSMethod.HW_FORECAST) {
                     body.add("model", this.model)
                 }
+                Request(url + dsMethod.value, body)
+            }
+            DSMethod.ADF_TEST -> {
                 Request(url + dsMethod.value, body)
             }
             else -> throw DSCoreException("Invalid method, the available ones are: " + DSMethod.values())

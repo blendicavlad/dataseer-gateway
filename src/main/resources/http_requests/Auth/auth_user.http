@@ -5,7 +5,7 @@ Content-Type: application/json
 {
   "fullName" : "{{full_name}}",
   "email" : "{{email}}",
-  "password" : "{{parola}}"
+  "password" : "{{password}}"
 }
 
 ###

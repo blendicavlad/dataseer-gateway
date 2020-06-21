@@ -1,5 +1,5 @@
 GET localhost:8080/actuator/health
-Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI1IiwiaWF0IjoxNTkxNTI5Njk4LCJleHAiOjE1OTIzOTM2OTh9.nwjUpJ62oq5ozEg2OS5bE-zTKf10QyQ9znc1yN_2Zs7Q8dS0nRUi4F_JbA9-NxoLH5BrF6Pr-CM_FS-AWUUACA
+Authorization: Bearer {{temp_token}}
 Accept: application/json
 
 ###
