@@ -1,4 +1,4 @@
-POST {{local_url}}/core/triple_exp_smoothing?data_set_id=10
+POST {{local_url}}/core/triple_exp_smoothing?data_set_id=2
 Accept: application/json
 Authorization: Bearer {{temp_token}}
 Content-Type: application/json
