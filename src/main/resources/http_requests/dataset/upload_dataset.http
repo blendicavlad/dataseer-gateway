@@ -4,18 +4,18 @@ Accept-Encoding: gzip, deflate, br
 Content-Type: multipart/form-data; boundary=boundary
 
 --boundary
-Content-Disposition: form-data; name="file"; filename="macrodata.csv"
+Content-Disposition: form-data; name="file"; filename="uspopulation.csv"
 Content-Type: text/csv
 
-< ../../../../mock_data/airline_passengers.csv
+< ../../../../mock_data/macrodata.csv
 --boundary
 Content-Disposition: form-data; name="name";
 
-SD-01
+SD-03
 --boundary
 Content-Disposition: form-data; name="description";
 
-Date macroeconomice din US
+Date macroeconomice US
 --boundary
 
 > {%

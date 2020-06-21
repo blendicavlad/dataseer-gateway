@@ -100,6 +100,14 @@ class DSCoreController {
                        @RequestParam("data_set_id") dataSetID: Long,
                        @RequestBody body: JSONObject): ResponseEntity<DSCorePayload> {
 
-        return dsCoreService.init(body, dataSetID, file).apply(DSMethod.SIMPLE_MOVING_AVERAGE)
+        return dsCoreService.init(body, dataSetID, file).apply(DSMethod.AUTO_REGRESSION)
+    }
+
+    @PostMapping("/adf_test")
+    fun adfTest(@RequestParam("file", required = false) file: MultipartFile?,
+                       @RequestParam("data_set_id") dataSetID: Long,
+                       @RequestBody body: JSONObject): ResponseEntity<DSCorePayload> {
+        body.appendField("y","mock")
+        return dsCoreService.init(body, dataSetID, file).apply(DSMethod.ADF_TEST)
     }
 }
