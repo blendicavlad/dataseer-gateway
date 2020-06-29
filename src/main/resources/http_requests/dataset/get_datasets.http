@@ -1,4 +1,4 @@
-GET {{aws_url}}/dataset/get_datasets
+GET {{local_url}}/dataset/get_datasets
 Authorization: Bearer {{temp_token}}
 Accept: application/json
 Content-Type: application/json

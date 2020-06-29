@@ -1,4 +1,4 @@
-GET {{local_url}}/dataset/get_dataset/9
+GET {{local_url}}/dataset/get_dataset/4
 Authorization: Bearer {{temp_token}}
 Accept: application/json
 Content-Type: application/json

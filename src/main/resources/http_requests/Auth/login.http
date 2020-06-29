@@ -1,4 +1,4 @@
-POST {{aws_url}}/auth/login
+POST {{local_url}}/auth/login
 Accept: application/json
 Content-Type: application/json
 
