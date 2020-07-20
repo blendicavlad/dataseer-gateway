@@ -159,7 +159,7 @@ class DSCoreService {
                     DSCorePayload::class.java)
         } catch (e: HttpClientErrorException) {
             logger.error(e.message)
-            throw e
+            throw e.message?.let { DSCoreException(it) }!!
         }
         return response
     }
