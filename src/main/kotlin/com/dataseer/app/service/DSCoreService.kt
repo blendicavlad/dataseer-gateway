@@ -12,13 +12,16 @@ import net.minidev.json.JSONObject
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.context.annotation.Scope
+import org.springframework.context.annotation.ScopedProxyMode
 import org.springframework.core.env.Environment
 import org.springframework.http.*
-import org.springframework.stereotype.Service
+import org.springframework.stereotype.Component
 import org.springframework.util.LinkedMultiValueMap
 import org.springframework.util.MultiValueMap
 import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.client.RestTemplate
+import org.springframework.web.context.WebApplicationContext
 import org.springframework.web.multipart.MultipartFile
 import java.lang.ClassCastException
 import java.time.LocalDateTime
@@ -29,7 +32,8 @@ import java.util.function.Function
  * @author Blendica Vlad
  * @date 17.05.2020
  */
-@Service
+@Component
+@Scope(WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 class DSCoreService {
 
     companion object {
@@ -155,7 +159,7 @@ class DSCoreService {
                     DSCorePayload::class.java)
         } catch (e: HttpClientErrorException) {
             logger.error(e.message)
-            throw e
+            throw e.message?.let { DSCoreException(it) }!!
         }
         return response
     }
@@ -180,6 +184,7 @@ class DSCoreService {
 
         return when (dsMethod) {
             DSMethod.DESCRIBE, DSMethod.ETS_SEASONAL_DECOMPOSE -> {
+                body.add("freq", this.freq)
                 Request(url + dsMethod.value, body)
             }
             DSMethod.HODRICK_PRESCOTT_FILTER -> {

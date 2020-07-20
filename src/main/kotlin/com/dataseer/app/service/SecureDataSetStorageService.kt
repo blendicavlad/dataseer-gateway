@@ -73,7 +73,7 @@ class SecureDataSetStorageService {
             val headers = reader.readLine().split(",")
             IntStream.range(0, headers.size).mapToObj {
                 DataHeader(
-                        headerName = headers[it],
+                        headerName = headers[it].replace("\"", ""),
                         isTimeIndex = it == 0,
                         dataSet = dataSet
                 )
